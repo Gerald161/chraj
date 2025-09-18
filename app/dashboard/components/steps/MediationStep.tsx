@@ -41,6 +41,7 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
                   value={mediationDate}
                   onChange={(e) => setMediationDate(e.target.value)}
                   className="w-full bg-slate-700 text-white rounded-lg px-10 py-2"
+                  style={{paddingRight: "10px"}}
                 />
               </div>
             </div>

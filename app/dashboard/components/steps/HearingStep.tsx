@@ -134,6 +134,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance })
                   value={newHearing.date}
                   onChange={(e) => setNewHearing(prev => ({ ...prev, date: e.target.value }))}
                   className="w-full bg-slate-700 text-white rounded-lg px-10 py-2"
+                  style={{paddingRight: "10px"}}
                 />
               </div>
             </div>
