@@ -124,12 +124,12 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
       </div> */}
 
       {/* Progress Steps */}
-      <div style={{maxWidth: "500px"}} className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6 overflow-x-auto`}>
-        <div className="flex items-center justify-between min-w-max">
+      <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6`}>
+        <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center">
               <div 
-                className={`flex items-center space-x-2 cursor-pointer p-3 rounded-lg transition-colors whitespace-nowrap ${
+                className={`flex items-center space-x-2 cursor-pointer p-3 rounded-lg transition-colors ${
                   isStepActive(step.id) 
                     ? 'bg-blue-600 text-white'
                     : isStepCompleted(index)
