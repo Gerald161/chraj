@@ -29,10 +29,6 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance })
   const attendeeOptions = [
     'Complainant',
     'Respondent',
-    'Witness 1',
-    'Witness 2',
-    'Legal Representative',
-    'Expert Witness'
   ];
 
   const addHearing = () => {
