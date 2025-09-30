@@ -37,8 +37,6 @@ export default function DashboardPage() {
 
   const getPageTitle = () => {
     switch (activeSection) {
-      case 'overview':
-        return 'Overview';
       case 'available-cases':
         return 'Available Cases';
       case 'my-cases':
