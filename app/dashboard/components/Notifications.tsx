@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { NotificationCard, NotificationData } from './notificationsComponents/NotificationCard';
 
 interface NotificationsProps{
