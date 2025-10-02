@@ -91,7 +91,9 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'appointments' && (
-          <Appointments/>
+          <Appointments
+            isDarkMode={isDarkMode}
+          />
         )}
         
         {activeSection === 'case-detail' && selectedCase && (
