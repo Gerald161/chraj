@@ -79,32 +79,22 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   return (
     <div className={`overflow-y-auto transition-colors duration-200 ${themeClasses.container}`}>
       <div className="container mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={onBack}
-            className={`p-2 rounded-lg transition-colors ${themeClasses.button} border`}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          {/* <div>
-            <h1 className={`text-3xl font-bold ${themeClasses.text}`}>
-              Appointment Details
-            </h1>
-            <p className={`mt-1 ${themeClasses.textMuted}`}>
-              View and manage appointment information
-            </p>
-          </div> */}
-        </div>
-
         {/* Main Content */}
         <div className="space-y-8">
           {/* Title and Type */}
           <div className={`rounded-lg border ${themeClasses.card} p-6`}>
             <div className="flex items-start justify-between mb-4">
-              <h2 className={`text-2xl font-bold ${themeClasses.text}`}>
-                {appointment.title}
-              </h2>
+              <div className='flex gap-2'>
+                <button
+                  onClick={onBack}
+                  className={`p-2 rounded-lg transition-colors ${themeClasses.button} border cursor-pointer`}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h2 className={`text-2xl font-bold ${themeClasses.text}`}>
+                  {appointment.title}
+                </h2>
+              </div>
               <span className={`px-4 py-2 rounded-full text-sm font-medium ${getTypeColor(appointment.type)}`}>
                 {appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}
               </span>

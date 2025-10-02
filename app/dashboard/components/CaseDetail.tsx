@@ -93,36 +93,24 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
   const renderStepContent = () => {
     switch (activeStep) {
       case 'INITIAL_REVIEW':
-        return <InitialReviewStep caseData={caseData} onAdvance={handleStepChange} />;
+        return <InitialReviewStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'INVESTIGATION':
-        return <InvestigationStep caseData={caseData} onAdvance={handleStepChange} />;
+        return <InvestigationStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'HEARING':
-        return <HearingStep caseData={caseData} onAdvance={handleStepChange} />;
+        return <HearingStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'MEDIATION':
-        return <MediationStep caseData={caseData} onAdvance={handleStepChange} />;
+        return <MediationStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'DECISION':
-        return <DecisionStep caseData={caseData} onAdvance={handleStepChange} />;
+        return <DecisionStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'RESOLVED':
-        return <ResolvedStep caseData={caseData} onClose={() => {}} />;
+        return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
       default:
-        return <ResolvedStep caseData={caseData} onClose={() => {}} />;
+        return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
     }
   };
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {/* Case Header */}
-      {/* <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6`}>
-        <div>
-          <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            {caseData.title}
-          </h2>
-          <p className={`mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-            Case #{caseData.caseNumber} • {caseData.assignedOfficer}
-          </p>
-        </div>
-      </div> */}
-
       {/* Progress Steps */}
       <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6`}>
         <div className="flex items-center justify-between">
