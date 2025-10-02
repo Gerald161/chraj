@@ -87,7 +87,9 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'notifications' && (
-          <Notifications/>
+          <Notifications
+            isDarkMode={isDarkMode}
+          />
         )}
 
         {activeSection === 'appointments' && (
