@@ -8,6 +8,8 @@ import { AvailableCases } from './components/AvailableCases';
 import { CaseDetail } from './components/CaseDetail';
 import { mockCases } from './data/mockCases';
 import { CaseData } from './types/case';
+import Notifications from './components/Notifications';
+import Appointments from './components/Appointments';
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState('my-cases');
@@ -83,6 +85,14 @@ export default function DashboardPage() {
             isDarkMode={isDarkMode}
           />
         )}
+
+        {activeSection === 'notifications' && (
+          <Notifications/>
+        )}
+
+        {activeSection === 'appointments' && (
+          <Appointments/>
+        )}
         
         {activeSection === 'case-detail' && selectedCase && (
           <CaseDetail
@@ -90,19 +100,6 @@ export default function DashboardPage() {
             onUpdateCase={handleCaseUpdate}
             isDarkMode={isDarkMode}
           />
-        )}
-        
-        {!['my-cases', 'available-cases', 'case-detail'].includes(activeSection) && (
-          <div className={`flex-1 flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-            <div className="text-center">
-              <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                {activeSection.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </h2>
-              <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                This section is under development
-              </p>
-            </div>
-          </div>
         )}
       </div>
     </div>

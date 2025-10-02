@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { CaseListItem } from './CaseListItem';
 import { CaseData } from '../types/case';
 
@@ -17,9 +17,10 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSel
   const availableCases = cases.filter(caseItem => caseItem.status === 'INITIAL_REVIEW');
 
   const filteredCases = availableCases.filter(caseItem => {
-    const matchesSearch = caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         caseItem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         caseItem.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      caseItem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      caseItem.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesPriority = priorityFilter === 'All Priority' || caseItem.priority === priorityFilter;
     
@@ -48,7 +49,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSel
             />
           </div>
           <div className="flex items-center space-x-2">
-            <Filter className={`w-5 h-5 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`} />
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}

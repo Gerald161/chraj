@@ -5,7 +5,7 @@ import {
   FolderOpen, 
   Bell, 
   Calendar, 
-  Settings, 
+  // Settings, 
   LogOut,
   Building2
 } from 'lucide-react';
@@ -72,14 +72,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
 
       {/* Footer */}
       <div className={`p-4 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
-        <button className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+        {/* <button className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
           isDarkMode 
             ? 'text-slate-300 hover:bg-slate-800 hover:text-white' 
             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
         }`}>
           <Settings className="w-5 h-5" />
           <span>Settings</span>
-        </button>
+        </button> */}
         <button className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors mt-2 ${
           isDarkMode 
             ? 'text-slate-300 hover:bg-slate-800 hover:text-white' 
