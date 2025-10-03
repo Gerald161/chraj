@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Shield, User, Eye, EyeOff, Sun, Moon, ArrowLeft, Lock } from 'lucide-react';
 import Link from 'next/link';
 
-export default function SigninPage() {
+export default function ConfirmPasswordPage() {
     const [isDarkMode, setIsDarkMode] = useState(true);
     
     const [showPassword, setShowPassword] = useState(false);
@@ -78,36 +78,47 @@ export default function SigninPage() {
           </div>
           <h2 className={`text-3xl font-bold ${themeClasses.text} mb-2`}>Welcome Back</h2>
           <p className={`${themeClasses.textSecondary}`}>
-            Sign in to access the CHRAJ system
+            Reset access to the CHRAJ system
           </p>
         </div>
 
         {/* Login Form */}
         <div className="space-y-6">
-          {/* User ID Field */}
-          <div>
+            {/* Password Field */}
+            <div>
             <label className={`block text-sm font-semibold ${themeClasses.text} mb-3`}>
-              User ID
+                Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} size={18} />
-              </div>
-              <input
-                type="text"
-                name="userId"
-                value={formData.userId}
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} size={18} />
+                </div>
+                <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.input}`}
-                placeholder="Enter your user ID"
-              />
+                className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.input}`}
+                placeholder="Enter your password"
+                />
+                <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                {showPassword ? (
+                    <EyeOff className={`${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'}`} size={18} />
+                ) : (
+                    <Eye className={`${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'}`} size={18} />
+                )}
+                </button>
             </div>
-          </div>
+            </div>
 
-          {/* Password Field */}
+            {/* Password Field */}
           <div>
             <label className={`block text-sm font-semibold ${themeClasses.text} mb-3`}>
-              Password
+              Confirm Password
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,7 +130,7 @@ export default function SigninPage() {
                 value={formData.password}
                 onChange={handleInputChange}
                 className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.input}`}
-                placeholder="Enter your password"
+                placeholder="Confirm password"
               />
               <button
                 type="button"
@@ -135,33 +146,13 @@ export default function SigninPage() {
             </div>
           </div>
 
-          {/* Login Button */}
-          <button
-            onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Sign In
-          </button>
-
-           {/* Remember Me & Forgot Password */}
-          <div className="flex justify-center">
-            {/* <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="rememberMe"
-                checked={formData.rememberMe}
-                onChange={handleInputChange}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className={`ml-3 text-sm ${themeClasses.textSecondary}`}>Remember me</span>
-            </label> */}
-            <Link
-              href={"/forgot-password"}
-              className="text-sm text-blue-500 hover:text-blue-400 transition-colors font-medium"
-            >
-              Forgot password?
-            </Link>
-          </div>
+            {/* Save Button */}
+            <button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                Save
+            </button>
         </div>
 
         {/* Footer */}

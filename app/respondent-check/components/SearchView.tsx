@@ -1,5 +1,6 @@
 import React from 'react';
-import { Search, Sun, Moon } from 'lucide-react';
+import { Search, Sun, Moon, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 interface SearchViewProps {
   theme: 'light' | 'dark';
@@ -24,6 +25,17 @@ export const SearchView: React.FC<SearchViewProps> = ({
         ? 'bg-gray-900 text-white' 
         : 'bg-gradient-to-br from-blue-50 via-white to-green-50 text-gray-900'
     }`}>
+      <Link
+        href={"/"}
+        className={`fixed top-6 left-6 p-3 rounded-full shadow-lg transition-all duration-300 z-10 ${
+          theme === 'dark' 
+            ? 'bg-gray-800/50 backdrop-blur border border-gray-700/50 text-gray-300 hover:bg-gray-700/50 hover:text-white' 
+            : 'bg-white text-gray-700 hover:bg-gray-100 shadow-md'
+        }`}
+      >
+        <ArrowLeft size={20} />
+      </Link>
+
       {/* Theme Toggle */}
       <div className="absolute top-6 right-6">
         <button

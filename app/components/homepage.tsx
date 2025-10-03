@@ -270,10 +270,12 @@ export default function Homepage() {
               Report human rights violations, corruption, or administrative injustices. 
               Free, confidential, and accessible to all Ghanaians.
             </p>
-            <button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-semibold group-hover:shadow-lg">
-              File Complaint Now
-              <ArrowRight className="inline ml-2" size={18} />
-            </button>
+            <Link href={"/file-complaint"}>
+              <button className="w-full cursor-pointer bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-semibold group-hover:shadow-lg">
+                File Complaint Now
+                <ArrowRight className="inline ml-2" size={18} />
+              </button>
+            </Link>
           </div>
 
           {/* Check Case Status */}
@@ -288,10 +290,12 @@ export default function Homepage() {
               Track the progress of your complaint using your case ID. 
               Stay informed about every step of your case resolution.
             </p>
-            <button className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-semibold group-hover:shadow-lg">
-              Check Status
-              <Search className="inline ml-2" size={18} />
-            </button>
+            <Link href={"/check-complaint"}>
+              <button className="w-full cursor-pointer bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-semibold group-hover:shadow-lg">
+                Check Status
+                <Search className="inline ml-2" size={18} />
+              </button>
+            </Link>
           </div>
         </div>
       </section>

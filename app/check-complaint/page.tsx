@@ -38,7 +38,7 @@ export default function CheckComplaint() {
         }[];
     }
 
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
     const [currentView, setCurrentView] = useState<'search' | 'dashboard'>('search');
     const [caseId, setCaseId] = useState('');
     const [caseData, setCaseData] = useState<CaseData | null>(null);
