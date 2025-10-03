@@ -8,18 +8,7 @@ interface CaseCardProps {
 }
 
 export const CaseCard: React.FC<CaseCardProps> = ({ case: caseData, onClick }) => {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'HIGH':
-        return 'bg-red-600';
-      case 'MEDIUM':
-        return 'bg-orange-600';
-      case 'LOW':
-        return 'bg-green-600';
-      default:
-        return 'bg-gray-600';
-    }
-  };
+  
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -66,7 +55,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({ case: caseData, onClick }) =
           <h3 className="text-white font-semibold text-lg mb-2">{caseData.title}</h3>
           <p className="text-slate-400 text-sm mb-3 line-clamp-2">{caseData.description}</p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${getPriorityColor(caseData.priority)}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium text-white`}>
           {caseData.priority}
         </span>
       </div>

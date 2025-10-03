@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { CaseListItem } from './CaseListItem';
 import { CaseData } from '../types/case';
+import { AvailableCaseListItem } from './AvailableCaseListItem';
 
 interface AvailableCasesProps {
   cases: CaseData[];
@@ -11,7 +12,6 @@ interface AvailableCasesProps {
 
 export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSelect, isDarkMode }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('All Priority');
 
   // Filter for unassigned cases only
   const availableCases = cases.filter(caseItem => caseItem.status === 'INITIAL_REVIEW');
@@ -22,12 +22,8 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSel
       caseItem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       caseItem.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesPriority = priorityFilter === 'All Priority' || caseItem.priority === priorityFilter;
-    
-    return matchesSearch && matchesPriority;
+    return matchesSearch;
   });
-
-  const priorityOptions = ['All Priority', 'HIGH', 'MEDIUM', 'LOW'];
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
@@ -48,23 +44,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSel
               }`}
             />
           </div>
-          <div className="flex items-center space-x-2">
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className={`rounded-lg px-4 py-2 border transition-colors ${
-                isDarkMode 
-                  ? 'bg-slate-800 text-white border-slate-600' 
-                  : 'bg-white text-gray-900 border-gray-300'
-              }`}
-            >
-              {priorityOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
@@ -72,7 +51,7 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ cases, onCaseSel
       <div className={`flex-1 p-6 overflow-y-auto ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
         <div className="space-y-4">
           {filteredCases.map((caseItem) => (
-            <CaseListItem
+            <AvailableCaseListItem
               key={caseItem.id}
               case={caseItem}
               onClick={onCaseSelect}
