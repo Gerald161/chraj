@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, User, FileText } from 'lucide-react';
 import { CaseData } from '../types/case';
 
 interface CaseListItemProps {
@@ -80,7 +80,7 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
 
       <div className={`flex items-center text-sm space-x-6 mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
         <div className="flex items-center space-x-1">
-          <span className="text-slate-500">📋</span>
+          <FileText className="w-4 h-4" />
           <span>{caseData.caseNumber}</span>
         </div>
         <div className="flex items-center space-x-1">
@@ -89,7 +89,7 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
         </div>
         {caseData.respondent && (
           <div className="flex items-center space-x-1">
-            <MapPin className="w-4 h-4" />
+            <User className="w-4 h-4" />
             <span>{caseData.respondent}</span>
           </div>
         )}

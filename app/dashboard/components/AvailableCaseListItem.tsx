@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Calendar, MapPin } from 'lucide-react';
+import { Eye, Calendar, FileText, User } from 'lucide-react';
 import { CaseData } from '../types/case';
 
 interface AvailableCaseListItemProps {
@@ -15,25 +15,6 @@ export const AvailableCaseListItem: React.FC<AvailableCaseListItemProps> = ({
   showAcceptButton = false,
   isDarkMode = true 
 }) => {
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'INITIAL_REVIEW':
-        return 'INITIAL REVIEW';
-      case 'INVESTIGATION':
-        return 'INVESTIGATING';
-      case 'HEARING':
-        return 'HEARING';
-      case 'MEDIATION':
-        return 'MEDIATION';
-      case 'DECISION':
-        return 'DECISION';
-      case 'RESOLVED':
-        return 'RESOLVED';
-      default:
-        return status;
-    }
-  };
-
   return (
     <div className={`${
       isDarkMode ? 'bg-slate-800 border-slate-700 hover:bg-slate-750' : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -53,7 +34,7 @@ export const AvailableCaseListItem: React.FC<AvailableCaseListItemProps> = ({
 
       <div className={`flex items-center text-sm space-x-6 mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
         <div className="flex items-center space-x-1">
-          <span className="text-slate-500">📋</span>
+          <FileText className="w-4 h-4" />
           <span>{caseData.caseNumber}</span>
         </div>
         <div className="flex items-center space-x-1">
@@ -62,7 +43,7 @@ export const AvailableCaseListItem: React.FC<AvailableCaseListItemProps> = ({
         </div>
         {caseData.respondent && (
           <div className="flex items-center space-x-1">
-            <MapPin className="w-4 h-4" />
+            <User className="w-4 h-4" />
             <span>{caseData.respondent}</span>
           </div>
         )}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { FileText, Eye, Search, Users, Gavel, CheckCircle, ChevronRight, Calendar } from 'lucide-react';
+import { Search, Users, Gavel, CheckCircle, ChevronRight, Calendar } from 'lucide-react';
 import { CaseData } from '../types/case';
-import { InitialReviewStep } from './steps/InitialReviewStep';
 import { InvestigationStep } from './steps/InvestigationStep';
 import { HearingStep } from './steps/HearingStep';
 import { MediationStep } from './steps/MediationStep';
@@ -18,12 +17,6 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
   const [activeStep, setActiveStep] = useState(caseData.status);
 
   const steps = [
-    {
-      id: 'INITIAL_REVIEW',
-      label: 'Initial Review',
-      icon: Eye,
-      description: 'Determine if case is within CHRAJ mandate'
-    },
     {
       id: 'INVESTIGATION',
       label: 'Investigation',
@@ -73,27 +66,12 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
       ...caseData, 
       status: newStatus,
       lastUpdated: new Date().toISOString().split('T')[0],
-      progress: getProgressByStatus(newStatus)
     };
     onUpdateCase(updatedCase);
   };
 
-  const getProgressByStatus = (status: CaseData['status']): number => {
-    switch (status) {
-      case 'INITIAL_REVIEW': return 25;
-      case 'INVESTIGATION': return 40;
-      case 'HEARING': return 60;
-      case 'MEDIATION': return 75;
-      case 'DECISION': return 90;
-      case 'RESOLVED': return 100;
-      default: return 0;
-    }
-  };
-
   const renderStepContent = () => {
     switch (activeStep) {
-      case 'INITIAL_REVIEW':
-        return <InitialReviewStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'INVESTIGATION':
         return <InvestigationStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'HEARING':

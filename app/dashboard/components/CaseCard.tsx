@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Calendar, User } from 'lucide-react';
+import { Eye, Calendar, FileText } from 'lucide-react';
 import { CaseData } from '../types/case';
 
 interface CaseCardProps {
@@ -8,8 +8,6 @@ interface CaseCardProps {
 }
 
 export const CaseCard: React.FC<CaseCardProps> = ({ case: caseData, onClick }) => {
-  
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'INITIAL_REVIEW':

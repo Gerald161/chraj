@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gavel, FileText, Send, CheckCircle } from 'lucide-react';
+import { Handshake, Clock, Send, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface DecisionStepProps {
@@ -9,18 +9,27 @@ interface DecisionStepProps {
 }
 
 export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance, isDarkMode }) => {
-  const [decisionType, setDecisionType] = useState('');
-  const [findings, setFindings] = useState('');
-  const [recommendations, setRecommendations] = useState('');
-  const [verdict, setVerdict] = useState('');
+  const [mediationSuccess, setMediationSuccess] = useState<boolean | null>(null);
+  const [agreedTerms, setAgreedTerms] = useState<string[]>(['']);
+  const [failureReason, setFailureReason] = useState('');
+  const [nextSteps, setNextSteps] = useState('');
+  const [officerNotes, setOfficerNotes] = useState('');
 
-  const decisionTypes = [
-    'Complaint Substantiated',
-    'Complaint Not Substantiated',
-    'Complaint Resolved through Mediation',
-    'Complaint Withdrawn',
-    'Administrative Action Required'
-  ];
+  const addTerm = () => {
+    setAgreedTerms([...agreedTerms, '']);
+  };
+
+  const updateTerm = (index: number, value: string) => {
+    const newTerms = [...agreedTerms];
+    newTerms[index] = value;
+    setAgreedTerms(newTerms);
+  };
+
+  const removeTerm = (index: number) => {
+    if (agreedTerms.length > 1) {
+      setAgreedTerms(agreedTerms.filter((_, i) => i !== index));
+    }
+  };
 
   const handleAdvance = () => {
     onAdvance('RESOLVED');
@@ -28,105 +37,169 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
 
   return (
     <div className="space-y-6">
+      {/* Mediation Outcome Summary */}
       <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
-        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center`}>
-          <Gavel className="w-6 h-6 mr-2" />
-          Final Decision & Verdict
-        </h3>
+        <div className='flex items-center mb-4'>
+          <Handshake className={`w-6 h-6 mr-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
+          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            Mediation Outcome
+          </h3>
+        </div>
 
-        <div className="space-y-6">
-          {/* Decision Type */}
-          <div>
-            <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} font-medium mb-3`}>Decision Type</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {decisionTypes.map((type) => (
-                <label key={type} className={`flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <input
-                    type="radio"
-                    name="decisionType"
-                    value={type}
-                    checked={decisionType === type}
-                    onChange={(e) => setDecisionType(e.target.value)}
-                    className="mr-2"
-                  />
-                  {type}
-                </label>
-              ))}
+        <div className="space-y-3">
+          <button
+            onClick={() => setMediationSuccess(true)}
+            className={`w-full p-4 rounded-lg border-2 transition-all flex items-center ${
+              mediationSuccess === true
+                ? 'border-green-500 bg-green-500/10'
+                : isDarkMode
+                ? 'border-slate-600 hover:border-slate-500'
+                : 'border-gray-300 hover:border-gray-400'
+            }`}
+          >
+            <div
+              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 ${
+                mediationSuccess === true
+                  ? 'border-green-500 bg-green-500'
+                  : isDarkMode
+                  ? 'border-slate-600'
+                  : 'border-gray-300'
+              }`}
+            >
+              {mediationSuccess === true && (
+                <div className="w-2 h-2 rounded-full bg-white"></div>
+              )}
             </div>
-          </div>
+            <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              Agreement Reached
+            </span>
+          </button>
 
-          {/* Findings */}
-          <div>
-            <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} font-medium mb-2`}>Findings</label>
-            <textarea
-              value={findings}
-              onChange={(e) => setFindings(e.target.value)}
-              className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              rows={5}
-              placeholder="Summarize the key findings from the investigation and mediation process..."
-            />
-          </div>
+          <button
+            onClick={() => setMediationSuccess(false)}
+            className={`w-full p-4 rounded-lg border-2 transition-all flex items-center ${
+              mediationSuccess === false
+                ? 'border-red-500 bg-red-500/10'
+                : isDarkMode
+                ? 'border-slate-600 hover:border-slate-500'
+                : 'border-gray-300 hover:border-gray-400'
+            }`}
+          >
+            <div
+              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 ${
+                mediationSuccess === false
+                  ? 'border-red-500 bg-red-500/10'
+                  : isDarkMode
+                  ? 'border-slate-600'
+                  : 'border-gray-300'
+              }`}
+            >
+              {mediationSuccess === false && (
+                <div className="w-2 h-2 rounded-full bg-white"></div>
+              )}
+            </div>
+            <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              No Agreement Reached
+            </span>
+          </button>
+        </div>
+      </div>
 
-          {/* Recommendations */}
-          <div>
-            <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} font-medium mb-2`}>Recommendations</label>
-            <textarea
-              value={recommendations}
-              onChange={(e) => setRecommendations(e.target.value)}
-              className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              rows={4}
-              placeholder="List specific recommendations for resolution or corrective actions..."
-            />
-          </div>
+      {/* Terms & Agreement OR Failure Reason */}
+      {mediationSuccess === true && (
+        <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
+          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+            Terms & Agreement Reached
+          </h3>
 
-          {/* Verdict */}
-          <div>
-            <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} font-medium mb-2`}>Final Verdict</label>
-            <textarea
-              value={verdict}
-              onChange={(e) => setVerdict(e.target.value)}
-              className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              rows={4}
-              placeholder="State the final decision and any actions to be taken by parties..."
-            />
+          <div className="space-y-3">
+            {agreedTerms.map((term, index) => (
+              <div key={index} className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <textarea
+                    value={term}
+                    onChange={(e) => updateTerm(index, e.target.value)}
+                    className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    rows={2}
+                    placeholder={`Term ${index + 1}: Describe what was agreed upon...`}
+                  />
+                </div>
+                {agreedTerms.length > 1 && (
+                  <button
+                    onClick={() => removeTerm(index)}
+                    className={`p-2 ${isDarkMode ? 'bg-red-900 hover:bg-red-800' : 'bg-red-100 hover:bg-red-200'} ${isDarkMode ? 'text-red-200' : 'text-red-700'} rounded-lg transition-colors flex items-center justify-center`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <button
+              onClick={addTerm}
+              className={`w-full py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-100 hover:bg-gray-200'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}
+            >
+              + Add Another Term
+            </button>
           </div>
         </div>
+      )}
+
+      {mediationSuccess === false && (
+        <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
+          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+            Reason for Mediation Failure
+          </h3>
+
+          <textarea
+            value={failureReason}
+            onChange={(e) => setFailureReason(e.target.value)}
+            className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            rows={4}
+            placeholder="Explain why parties could not reach an agreement..."
+          />
+        </div>
+      )}
+
+      {/* Implementation Timeline / Next Steps */}
+      <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
+        <div className='flex items-center mb-4'>
+          <Clock className={`w-6 h-6 mr-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
+          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          {mediationSuccess ? 'Implementation Timeline' : 'Next Steps'}
+        </h3>
+        </div>
+
+        <textarea
+          value={nextSteps}
+          onChange={(e) => setNextSteps(e.target.value)}
+          className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          rows={4}
+          placeholder={mediationSuccess 
+            ? "Outline actions to be taken, responsible parties, and deadlines..." 
+            : "State what happens next (e.g., formal investigation, case closure, etc.)..."
+          }
+        />
       </div>
 
       {/* Publication Options */}
       <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
-        <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-3 flex items-center`}>
-          <FileText className="w-5 h-5 mr-2" />
-          Publication & Communication
+        <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
+          Officer Notes (Optional)
         </h4>
-        
-        <div className="space-y-3">
-          <label className={`flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            <input type="checkbox" className="mr-2" />
-            Send decision letter to complainant
-          </label>
-          <label className={`flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            <input type="checkbox" className="mr-2" />
-            Send decision letter to respondent
-          </label>
-          <label className={`flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            <input type="checkbox" className="mr-2" />
-            Publish decision summary (anonymized)
-          </label>
-          <label className={`flex items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            <input type="checkbox" className="mr-2" />
-            Submit to annual report compilation
-          </label>
-        </div>
+
+        <textarea
+          value={officerNotes}
+          onChange={(e) => setOfficerNotes(e.target.value)}
+          className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          rows={3}
+          placeholder="Any additional observations or context..."
+        />
       </div>
 
       <div className="flex justify-end space-x-4">
         <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
           Save Draft
-        </button>
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-          <Send className="w-4 h-4 mr-2" />
-          Publish Decision
         </button>
         <button
           onClick={handleAdvance}

@@ -70,46 +70,6 @@ export const ResolvedStep: React.FC<ResolvedStepProps> = ({ caseData, onClose, i
         </div>
       </div>
 
-      {/* Case Documents */}
-      <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6 mb-6`}>
-        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center`}>
-          <FileText className="w-6 h-6 mr-2" />
-          Case Documents
-        </h3>
-        {caseData.documents.length > 0 ? (
-          <div className="space-y-2">
-            {caseData.documents.map((doc) => (
-              <div key={doc.id} className={`flex items-center justify-between ${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-3`}>
-                <div className="flex items-center">
-                  <FileText className="w-4 h-4 text-blue-400 mr-3" />
-                  <div>
-                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-medium`}>{doc.name}</p>
-                    <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} text-xs`}>Uploaded {doc.uploadDate}</p>
-                  </div>
-                </div>
-                <button className="text-blue-400 hover:text-blue-300 flex items-center">
-                  <Download className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Download</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>No documents were submitted for this case.</p>
-        )}
-      </div>
-
-      {/* Final Actions */}
-      <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6 mb-6`}>
-        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Final Actions</h3>
-        <div className="flex justify-center">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center justify-center">
-            <Download className="w-4 h-4 mr-2" />
-            Download Case Report
-          </button>
-        </div>
-      </div>
-
       {/* Back to Cases */}
       <div className="text-center">
         <button
