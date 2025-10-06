@@ -23,8 +23,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       respondent: 'Ghana Education Service',
       dateSubmitted: '8/12/2024',
       status: 'pending',
-      category: 'Educational Rights Violation',
-      priority: 'high',
       documents: [
         'Admission_Denial_Letter.pdf',
         'Student_Application_Form.pdf',
@@ -44,8 +42,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       respondent: 'ABC Corporation Ltd',
       dateSubmitted: '10/12/2024',
       status: 'pending',
-      category: 'Employment Rights',
-      priority: 'medium',
       documents: [
         'Employment_Records.pdf',
         'Performance_Reviews.pdf'
@@ -63,8 +59,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       respondent: 'Ministry of Local Government',
       dateSubmitted: '12/12/2024',
       status: 'pending',
-      category: 'Administrative Justice',
-      priority: 'high',
       documents: [
         'Procurement_Documents.pdf',
         'Audit_Report.pdf',

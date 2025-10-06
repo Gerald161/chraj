@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Circle, Calendar } from 'lucide-react';
 
 interface HearingContentProps {
@@ -8,16 +8,27 @@ interface HearingContentProps {
 export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
   const [showReschedule, setShowReschedule] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
-  const dateInputRef = useRef<HTMLInputElement>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleRescheduleClick = () => {
-    dateInputRef.current?.click();
+    setShowReschedule(true);
+    setIsSubmitted(false);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value;
-    setRescheduleDate(selectedDate);
-    setShowReschedule(true);
+    setRescheduleDate(e.target.value);
+  };
+
+  const handleSubmitRequest = () => {
+    if (rescheduleDate) {
+      setIsSubmitted(true);
+      setShowReschedule(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowReschedule(false);
+    setRescheduleDate('');
   };
 
   const formatDateTime = (dateString: string) => {
@@ -59,6 +70,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
           </div>
         </div>
         
+        {/* Original Schedule */}
         <div className={`p-6 rounded-lg mb-6 ${
           theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
         }`}>
@@ -68,7 +80,21 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
             <div><strong>Venue:</strong> CHRAJ Regional Office</div>
           </div>
         </div>
+
+        {/* Requested Reschedule (Submitted) */}
+        {isSubmitted && rescheduleDate && (
+          <div className={`p-6 rounded-lg mb-6 ${
+            theme === 'dark' ? 'bg-blue-600/20 border-2 border-blue-500' : 'bg-blue-50 border-2 border-blue-300'
+          }`}>
+            <h4 className="font-semibold text-blue-600 mb-3">Requested New Schedule</h4>
+            <div className="text-lg">
+              <p><strong>Requested Date & Time:</strong> {formatDateTime(rescheduleDate)}</p>
+              <p className="text-sm mt-2 opacity-75">Status: Pending Approval</p>
+            </div>
+          </div>
+        )}
         
+        {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button className="py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors duration-200">
             Confirm Attendance
@@ -83,31 +109,38 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
           >
             Request Reschedule
           </button>
-          <input
-            ref={dateInputRef}
-            type="datetime-local"
-            className="hidden"
-            onChange={handleDateChange}
-          />
         </div>
         
-        {showReschedule && rescheduleDate && (
-          <div className={`mt-6 p-4 rounded-lg ${
-            theme === 'dark' ? 'bg-blue-600/20 border border-blue-500' : 'bg-blue-50 border border-blue-200'
+        {/* Reschedule Form */}
+        {showReschedule && (
+          <div className={`mt-6 p-6 rounded-lg border-2 ${
+            theme === 'dark' ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-300'
           }`}>
-            <h4 className="font-semibold text-blue-600 mb-2">Reschedule Request</h4>
-            <p className="text-sm mb-3">Requested new date and time:</p>
-            <p className="font-medium text-lg">{formatDateTime(rescheduleDate)}</p>
-            <div className="flex gap-3 mt-4">
-              <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors duration-200">
+            <h4 className="font-semibold text-lg mb-4">Select New Date and Time</h4>
+            <input
+              type="datetime-local"
+              value={rescheduleDate}
+              onChange={handleDateChange}
+              className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                theme === 'dark'
+                  ? 'bg-gray-800 border-gray-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+            />
+            <div className="flex gap-3">
+              <button 
+                onClick={handleSubmitRequest}
+                disabled={!rescheduleDate}
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200"
+              >
                 Submit Request
               </button>
               <button 
-                onClick={() => setShowReschedule(false)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                onClick={handleCancel}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
                   theme === 'dark' 
-                    ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    ? 'bg-gray-600 hover:bg-gray-500 text-white' 
+                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                 }`}
               >
                 Cancel

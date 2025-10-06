@@ -1,12 +1,22 @@
 "use client"
 
 import { useState } from 'react';
-import { Moon, Sun, Upload, FileText, ArrowLeft } from 'lucide-react';
+import { Moon, Sun, Upload, FileText, ArrowLeft, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FileComplaint() {
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        fullName: string;
+        phoneNumber: string;
+        emailAddress: string;
+        location: string;
+        complaintCategory: string;
+        subjectTitle: string;
+        detailedDescription: string;
+        dateOfIncident: string;
+        supportingDocuments: File[];
+    }>({
         fullName: '',
         phoneNumber: '',
         emailAddress: '',
@@ -31,7 +41,18 @@ export default function FileComplaint() {
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        
+        const files = Array.from(e.target.files || []);
+        setFormData(prev => ({
+            ...prev,
+            supportingDocuments: [...prev.supportingDocuments, ...files]
+        }));
+    };
+
+    const removeDocument = (indexToRemove: number) => {
+        setFormData(prev => ({
+            ...prev,
+            supportingDocuments: prev.supportingDocuments.filter((_, index) => index !== indexToRemove)
+        }));
     };
 
     const handleSubmit = () => {
@@ -181,36 +202,17 @@ export default function FileComplaint() {
                     
                     <div className="space-y-6">
                         <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Complaint Category <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="complaintCategory"
-                            value={formData.complaintCategory}
-                            onChange={handleInputChange}
-                            className={themeClasses.select}
-                        >
-                            <option value="">Select category</option>
-                            <option value="human-rights">Human Rights Violation</option>
-                            <option value="administrative">Administrative Injustice</option>
-                            <option value="corruption">Corruption</option>
-                            <option value="discrimination">Discrimination</option>
-                            <option value="other">Other</option>
-                        </select>
-                        </div>
-
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Subject/Title <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="subjectTitle"
-                            placeholder="Brief title of your complaint"
-                            value={formData.subjectTitle}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                        />
+                            <label className="block text-sm font-medium mb-2">
+                                Subject/Title <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="subjectTitle"
+                                placeholder="Brief title of your complaint"
+                                value={formData.subjectTitle}
+                                onChange={handleInputChange}
+                                className={themeClasses.input}
+                            />
                         </div>
 
                         <div>
@@ -248,40 +250,81 @@ export default function FileComplaint() {
                     <section>
                     <h3 className="text-xl font-semibold mb-6">Supporting Documents</h3>
                     
-                    <div className={themeClasses.uploadArea}>
-                        <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                        id="file-upload"
-                        />
-                        <label htmlFor="file-upload" className="cursor-pointer block">
-                        <Upload className={isDarkMode ? "w-12 h-12 text-gray-400 mx-auto mb-4" : "w-12 h-12 text-gray-400 mx-auto mb-4"} />
-                        <p className={themeClasses.uploadText}>
-                            Upload supporting documents
-                        </p>
-                        <p className={themeClasses.uploadSubtext}>
-                            PDF, DOC, JPG, PNG files up to 10MB each
-                        </p>
-                        <div className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block">
-                            Choose Files
+                    {formData.supportingDocuments.length === 0 ? (
+                        <div className={themeClasses.uploadArea}>
+                            <input
+                                type="file"
+                                multiple
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="file-upload"
+                            />
+                            <label htmlFor="file-upload" className="cursor-pointer block">
+                                <Upload className={isDarkMode ? "w-12 h-12 text-gray-400 mx-auto mb-4" : "w-12 h-12 text-gray-400 mx-auto mb-4"} />
+                                <p className={themeClasses.uploadText}>
+                                    Upload supporting documents
+                                </p>
+                                <p className={themeClasses.uploadSubtext}>
+                                    PDF, DOC, JPG, PNG files up to 10MB each
+                                </p>
+                                <div className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block">
+                                    Choose Files
+                                </div>
+                            </label>
                         </div>
-                        </label>
-                    </div>
-                    
-                    {formData.supportingDocuments.length > 0 && (
-                        <div className="mt-4">
-                        <p className={isDarkMode ? "text-sm font-medium mb-2 text-white" : "text-sm font-medium mb-2"}>Selected files:</p>
-                        <ul className={isDarkMode ? "text-sm text-gray-300" : "text-sm text-gray-600"}>
-                            {formData.supportingDocuments.map((file, index) => (
-                            <li key={index} className="flex items-center gap-2">
-                                <FileText className="w-4 h-4" />
-                                {/* {file.name} ({Math.round(file.size / 1024)}KB) */}
-                            </li>
-                            ))}
-                        </ul>
+                    ) : (
+                        <div>
+                            <div className="space-y-3 mb-4">
+                                {formData.supportingDocuments.map((file, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`flex items-center justify-between p-4 rounded-lg ${
+                                            isDarkMode 
+                                            ? 'bg-gray-700 border border-gray-600' 
+                                            : 'bg-gray-50 border border-gray-200'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <FileText className={isDarkMode ? "w-5 h-5 text-blue-400" : "w-5 h-5 text-blue-600"} />
+                                            <div>
+                                                <p className={isDarkMode ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
+                                                    {file.name}
+                                                </p>
+                                                <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
+                                                    {(file.size / 1024).toFixed(2)} KB
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => removeDocument(index)}
+                                            className={`p-1 rounded-full transition-colors ${
+                                                isDarkMode 
+                                                ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
+                                                : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
+                                            }`}
+                                            aria-label="Remove document"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            <input
+                                type="file"
+                                multiple
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="file-upload-more"
+                            />
+                            <label 
+                                htmlFor="file-upload-more" 
+                                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                            >
+                                Add More Files
+                            </label>
                         </div>
                     )}
                     </section>

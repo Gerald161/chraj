@@ -9,8 +9,6 @@ interface CaseData{
   respondent: string;
   dateSubmitted: string;
   status: string;
-  category: string;
-  priority: string;
   documents?: string[];
   additionalDetails?: {
     location?: string;

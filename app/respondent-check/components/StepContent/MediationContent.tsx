@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Calendar, MapPin, FileText, Clock, Users } from 'lucide-react';
 
 interface MediationContentProps {
@@ -7,23 +7,31 @@ interface MediationContentProps {
 
 export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => {
   const [showReschedule, setShowReschedule] = useState(false);
-  const [rescheduleDate, setRescheduleDate] = useState('');
-  const dateInputRef = useRef<HTMLInputElement>(null);
+  const [rescheduleDate, setRescheduleDate] = useState<string>('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleRescheduleClick = () => {
-    if (dateInputRef.current) {
-      dateInputRef.current.click();
-    }
+    setShowReschedule(true);
+    setIsSubmitted(false);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value;
-    setRescheduleDate(selectedDate);
-    setShowReschedule(true);
+    setRescheduleDate(e.target.value);
+  };
+
+  const handleSubmitRequest = () => {
+    if (rescheduleDate) {
+      setIsSubmitted(true);
+      setShowReschedule(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowReschedule(false);
+    setRescheduleDate('');
   };
 
   const formatDateTime = (dateString: string) => {
-    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       weekday: 'long',
@@ -77,6 +85,19 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
           
           <p className="text-sm opacity-75">Mediation is a voluntary process where both parties work together to reach a mutual agreement with the help of a neutral mediator.</p>
           
+          {/* Requested Reschedule (Submitted) */}
+          {isSubmitted && rescheduleDate && (
+            <div className={`mt-4 p-4 rounded-lg border-2 ${
+              theme === 'dark' ? 'bg-blue-600/20 border-blue-500' : 'bg-blue-50 border-blue-300'
+            }`}>
+              <h4 className="font-semibold text-blue-600 mb-2">Requested New Schedule</h4>
+              <div className="text-sm">
+                <p><strong>Requested Date & Time:</strong> {formatDateTime(rescheduleDate)}</p>
+                <p className="mt-2 opacity-75">Status: Pending Approval</p>
+              </div>
+            </div>
+          )}
+          
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 mt-6">
             <button className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
@@ -93,31 +114,36 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
           </div>
         </div>
         
-        {/* Hidden datetime input */}
-        <input
-          ref={dateInputRef}
-          type="datetime-local"
-          className="hidden"
-          onChange={handleDateChange}
-        />
-        
-        {/* Reschedule confirmation */}
+        {/* Reschedule Form */}
         {showReschedule && (
-          <div className={`p-4 rounded-lg mb-6 border-l-4 border-blue-500 ${
-            theme === 'dark' ? 'bg-gray-700/50' : 'bg-blue-50'
+          <div className={`p-6 rounded-lg border-2 mb-6 ${
+            theme === 'dark' ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-300'
           }`}>
-            <h3 className="font-semibold text-lg text-blue-600 mb-3">Reschedule Request</h3>
-            <p className="text-sm opacity-75 mb-4">
-              You have selected: <strong>{formatDateTime(rescheduleDate)}</strong>
-            </p>
+            <h4 className="font-semibold text-lg mb-4">Select New Date and Time</h4>
+            <input
+              type="datetime-local"
+              value={rescheduleDate}
+              onChange={handleDateChange}
+              className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                theme === 'dark'
+                  ? 'bg-gray-800 border-gray-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+            />
             <div className="flex gap-3">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+              <button 
+                onClick={handleSubmitRequest}
+                disabled={!rescheduleDate}
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200"
+              >
                 Submit Request
               </button>
               <button 
-                onClick={() => setShowReschedule(false)}
-                className={`border-2 border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  theme === 'dark' ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
+                onClick={handleCancel}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-600 hover:bg-gray-500 text-white' 
+                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                 }`}
               >
                 Cancel
