@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Circle, Calendar } from 'lucide-react';
+import { Circle, Calendar, CheckCircle } from 'lucide-react';
 
 interface HearingContentProps {
   theme: 'light' | 'dark';
@@ -9,10 +9,19 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
   const [showReschedule, setShowReschedule] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleRescheduleClick = () => {
     setShowReschedule(true);
     setIsSubmitted(false);
+  };
+
+  const handleConfirmAttendance = () => {
+    setIsConfirmed(true);
+  };
+
+  const handleCancelAttendance = () => {
+    setIsConfirmed(false);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +79,21 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
           </div>
         </div>
         
+        {/* Confirmed Attendance Success Card */}
+        {isConfirmed && (
+          <div className={`p-6 rounded-lg mb-6 ${
+            theme === 'dark' ? 'bg-green-600/30 border-2 border-green-500' : 'bg-green-100 border-2 border-green-400'
+          }`}>
+            <div className="flex items-center space-x-3 mb-2">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+              <h4 className="font-semibold text-green-600 text-lg">Attendance Confirmed</h4>
+            </div>
+            <p className="text-sm opacity-75 ml-9">
+              Your attendance has been successfully confirmed. You will receive a reminder before the hearing date.
+            </p>
+          </div>
+        )}
+
         {/* Original Schedule */}
         <div className={`p-6 rounded-lg mb-6 ${
           theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
@@ -96,18 +120,33 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
         
         {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button className="py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors duration-200">
-            Confirm Attendance
+          <button 
+            onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
+            disabled={isSubmitted}
+            className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+              isSubmitted || isConfirmed
+                ? theme === 'dark' 
+                  ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
+                  : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
+          >
+            {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
           </button>
           <button 
             onClick={handleRescheduleClick}
+            disabled={isConfirmed}
             className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
-              theme === 'dark' 
-                ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+              isConfirmed
+                ? theme === 'dark'
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                  : 'bg-gray-200 cursor-not-allowed text-gray-400'
+                : theme === 'dark' 
+                  ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
             }`}
           >
-            Request Reschedule
+            {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
           </button>
         </div>
         

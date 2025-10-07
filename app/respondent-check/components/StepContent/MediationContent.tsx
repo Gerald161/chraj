@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, FileText, Clock, Users } from 'lucide-react';
+import { Calendar, MapPin, FileText, Clock, Users, CheckCircle } from 'lucide-react';
 
 interface MediationContentProps {
   theme: 'light' | 'dark';
@@ -9,10 +9,19 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
   const [showReschedule, setShowReschedule] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleRescheduleClick = () => {
     setShowReschedule(true);
     setIsSubmitted(false);
+  };
+
+  const handleConfirmAttendance = () => {
+    setIsConfirmed(true);
+  };
+
+  const handleCancelAttendance = () => {
+    setIsConfirmed(false);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +73,21 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
             </span>
           </div>
           
+          {/* Confirmed Attendance Success Card */}
+          {isConfirmed && (
+            <div className={`p-4 rounded-lg mb-4 ${
+              theme === 'dark' ? 'bg-green-600/30 border-2 border-green-500' : 'bg-green-100 border-2 border-green-400'
+            }`}>
+              <div className="flex items-center space-x-3 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <h4 className="font-semibold text-green-600">Attendance Confirmed</h4>
+              </div>
+              <p className="text-sm opacity-75 ml-8">
+                Your attendance has been successfully confirmed. You will receive a reminder before the mediation session.
+              </p>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="flex items-center space-x-2">
               <Calendar className="w-4 h-4 opacity-60" />
@@ -100,16 +124,33 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
           
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 mt-6">
-            <button className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-              Confirm Attendance
+            <button 
+              onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
+              disabled={isSubmitted}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                isSubmitted || isConfirmed
+                  ? theme === 'dark' 
+                    ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
+                    : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
+            >
+              {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
             </button>
             <button 
               onClick={handleRescheduleClick}
-              className={`flex-1 border-2 border-green-600 text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                theme === 'dark' ? 'hover:bg-green-600/10' : 'hover:bg-green-50'
+              disabled={isConfirmed}
+              className={`flex-1 border-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                isConfirmed
+                  ? theme === 'dark'
+                    ? 'border-gray-600 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : `border-green-600 text-green-600 ${
+                      theme === 'dark' ? 'hover:bg-green-600/10' : 'hover:bg-green-50'
+                    }`
               }`}
             >
-              Request Reschedule
+              {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
             </button>
           </div>
         </div>
@@ -199,4 +240,4 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
       </div>
     </div>
   );
-};
+}
