@@ -33,20 +33,9 @@ export default function CaseDetailsPage({
   isDarkMode=true
 }: CaseDetailsPageProps) {
   const [mandateStatus, setMandateStatus] = useState<'within' | 'outside' | null>(null);
-  const [reviewNotes, setReviewNotes] = useState('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = () => {
-    if (!reviewNotes.trim()) {
-      alert('Please provide review notes');
-      return;
-    }
-
-    if (mandateStatus === 'within') {
-      onAcceptCase(reviewNotes);
-    } else if (mandateStatus === 'outside') {
-      onRejectCase(reviewNotes, 'outside_mandate');
-    }
+    
   };
 
   return (
@@ -231,24 +220,6 @@ export default function CaseDetailsPage({
                 </button>
               </div>
 
-              {/* Review Notes */}
-              <div className="mb-6">
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                  Review Notes
-                </label>
-                <textarea
-                  value={reviewNotes}
-                  onChange={(e) => setReviewNotes(e.target.value)}
-                  placeholder="Enter your initial review notes and assessment..."
-                  rows={6}
-                  className={`w-full px-4 py-3 rounded-lg border resize-none focus:outline-none focus:ring-2 transition-colors ${
-                    isDarkMode
-                      ? 'bg-slate-900 border-slate-700 focus:ring-blue-500 text-slate-100 placeholder-slate-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 text-gray-900 placeholder-gray-400'
-                  }`}
-                />
-              </div>
-
               {/* Warning for Outside Mandate */}
               {mandateStatus === 'outside' && (
                 <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
@@ -267,7 +238,7 @@ export default function CaseDetailsPage({
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                disabled={!mandateStatus || !reviewNotes.trim()}
+                disabled={!mandateStatus}
                 className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
                   mandateStatus === 'within'
                     ? 'bg-green-600 hover:bg-green-700 text-white'
