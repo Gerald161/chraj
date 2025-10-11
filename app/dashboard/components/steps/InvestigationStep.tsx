@@ -32,9 +32,8 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
           Investigation Phase
         </h3>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Investigation Notes */}
-          <div>
+        {/* Investigation Notes */}
+          <div className='pb-3'>
             <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-3`}>Investigation Notes</h4>
             <textarea
               value={investigationNotes}
@@ -70,7 +69,6 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
               )}
             </div>
           </div>
-        </div>
       </div>
 
       {/* Evidence Requests */}

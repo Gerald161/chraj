@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Plus, Trash2, Users } from 'lucide-react';
+import { Calendar, Clock, MapPin, Plus, Trash2, Users, Package } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface Hearing {
@@ -9,6 +9,8 @@ interface Hearing {
   venue: string;
   attendees: string[];
   purpose: string;
+  itemsForRespondent?: string[];
+  itemsForComplainant?: string[];
 }
 
 interface HearingStepProps {
@@ -24,8 +26,13 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
     time: '',
     venue: '',
     attendees: [] as string[],
-    purpose: ''
+    purpose: '',
+    itemsForRespondent: [] as string[],
+    itemsForComplainant: [] as string[]
   });
+
+  const [respondentItemInput, setRespondentItemInput] = useState('');
+  const [complainantItemInput, setComplainantItemInput] = useState('');
 
   const attendeeOptions = [
     'Complainant',
@@ -44,8 +51,12 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
         time: '',
         venue: '',
         attendees: [],
-        purpose: ''
+        purpose: '',
+        itemsForRespondent: [],
+        itemsForComplainant: []
       });
+      setRespondentItemInput('');
+      setComplainantItemInput('');
     }
   };
 
@@ -56,15 +67,50 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
   const toggleAttendee = (attendee: string) => {
     setNewHearing(prev => ({
       ...prev,
-      attendees: prev.attendees.includes(attendee)
-        ? prev.attendees.filter(a => a !== attendee)
-        : [...prev.attendees, attendee]
+      attendees: prev.attendees.includes(attendee) ? [] : [attendee]
+    }));
+  };
+
+  const addRespondentItem = () => {
+    if (respondentItemInput.trim()) {
+      setNewHearing(prev => ({
+        ...prev,
+        itemsForRespondent: [...prev.itemsForRespondent, respondentItemInput.trim()]
+      }));
+      setRespondentItemInput('');
+    }
+  };
+
+  const addComplainantItem = () => {
+    if (complainantItemInput.trim()) {
+      setNewHearing(prev => ({
+        ...prev,
+        itemsForComplainant: [...prev.itemsForComplainant, complainantItemInput.trim()]
+      }));
+      setComplainantItemInput('');
+    }
+  };
+
+  const removeRespondentItem = (item: string) => {
+    setNewHearing(prev => ({
+      ...prev,
+      itemsForRespondent: prev.itemsForRespondent.filter(i => i !== item)
+    }));
+  };
+
+  const removeComplainantItem = (item: string) => {
+    setNewHearing(prev => ({
+      ...prev,
+      itemsForComplainant: prev.itemsForComplainant.filter(i => i !== item)
     }));
   };
 
   const handleAdvance = () => {
     onAdvance('MEDIATION');
   };
+
+  const isRespondentSelected = newHearing.attendees.includes('Respondent');
+  const isComplainantSelected = newHearing.attendees.includes('Complainant');
 
   return (
     <div className="space-y-6">
@@ -102,6 +148,16 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                     {hearing.purpose && (
                       <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm`}>
                         <strong>Purpose:</strong> {hearing.purpose}
+                      </div>
+                    )}
+                    {hearing.itemsForRespondent && hearing.itemsForRespondent.length > 0 && (
+                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mt-2`}>
+                        <strong>Items for Respondent:</strong> {hearing.itemsForRespondent.join(', ')}
+                      </div>
+                    )}
+                    {hearing.itemsForComplainant && hearing.itemsForComplainant.length > 0 && (
+                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm`}>
+                        <strong>Items for Complainant:</strong> {hearing.itemsForComplainant.join(', ')}
                       </div>
                     )}
                   </div>
@@ -190,6 +246,92 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                 </label>
               ))}
             </div>
+
+            {/* Respondent Items Section */}
+            {isRespondentSelected && (
+              <div className={`${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-300'} border rounded-lg p-4 space-y-3`}>
+                <div className="flex items-center">
+                  <Package className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <h5 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Items for Respondent to Bring
+                  </h5>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={respondentItemInput}
+                    onChange={(e) => setRespondentItemInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addRespondentItem()}
+                    className={`flex-1 ${isDarkMode ? 'bg-slate-600 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    placeholder="Record investigation findings, witness statements..."
+                  />
+                  <button
+                    onClick={addRespondentItem}
+                    className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                {newHearing.itemsForRespondent.length > 0 && (
+                  <div className="space-y-2">
+                    {newHearing.itemsForRespondent.map((item, idx) => (
+                      <div key={idx} className={`flex items-center justify-between ${isDarkMode ? 'bg-slate-600' : 'bg-white'} rounded p-2`}>
+                        <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{item}</span>
+                        <button
+                          onClick={() => removeRespondentItem(item)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Complainant Items Section */}
+            {isComplainantSelected && (
+              <div className={`${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-300'} border rounded-lg p-4 space-y-3`}>
+                <div className="flex items-center">
+                  <Package className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} />
+                  <h5 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Items for Complainant to Bring
+                  </h5>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={complainantItemInput}
+                    onChange={(e) => setComplainantItemInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addComplainantItem()}
+                    className={`flex-1 ${isDarkMode ? 'bg-slate-600 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    placeholder="Evidence, documents, witness contact information..."
+                  />
+                  <button
+                    onClick={addComplainantItem}
+                    className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                {newHearing.itemsForComplainant.length > 0 && (
+                  <div className="space-y-2">
+                    {newHearing.itemsForComplainant.map((item, idx) => (
+                      <div key={idx} className={`flex items-center justify-between ${isDarkMode ? 'bg-slate-600' : 'bg-white'} rounded p-2`}>
+                        <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{item}</span>
+                        <button
+                          onClick={() => removeComplainantItem(item)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className={`${isDarkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-300'} border rounded-lg p-4`}>
               <p className={`${isDarkMode ? 'text-blue-200' : 'text-blue-800'} text-sm`}>

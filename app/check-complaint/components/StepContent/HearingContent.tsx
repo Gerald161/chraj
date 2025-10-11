@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Circle, Calendar, CheckCircle } from 'lucide-react';
+import { Circle, Calendar, CheckCircle, AlertCircle, File } from 'lucide-react';
 
 interface HearingContentProps {
   theme: 'light' | 'dark';
@@ -10,6 +10,13 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  const requiredItems = [
+    'Evidence files',
+    'Previous correspondence',
+    'Witness contact information',
+    'Supporting documents'
+  ];
 
   const handleRescheduleClick = () => {
     setShowReschedule(true);
@@ -187,6 +194,45 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Required Documents */}
+      {requiredItems.length > 0 && (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <h3 className="text-xl font-semibold mb-4">Required Documents</h3>
+          <p className="text-sm opacity-75 mb-4">Please bring the following documents to your hearing:</p>
+          
+          <div className="space-y-2">
+            {requiredItems.map((item, index) => (
+              <div key={index} className={`flex items-center space-x-3 p-3 rounded-lg ${
+                theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
+              }`}>
+                <File className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <span className="text-sm">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Important Notes */}
+      <div className={`p-4 rounded-lg border-l-4 border-yellow-500 ${
+        theme === 'dark' ? 'bg-gray-700/50' : 'bg-yellow-50'
+      }`}>
+        <div className="flex items-start space-x-3">
+          <AlertCircle className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
+          <div>
+            <h4 className="font-semibold text-yellow-600 mb-2">Important Notes</h4>
+            <ul className="text-sm opacity-75 space-y-1">
+              <li>• Bring original documents and photocopies</li>
+              <li>• Arrive 15 minutes before your scheduled time</li>
+              <li>• Organize documents in chronological order</li>
+              <li>• Contact your case officer if you have questions</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
