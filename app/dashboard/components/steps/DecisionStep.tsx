@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Handshake, Clock, Send, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
+import { Handshake, CheckCircle, AlertCircle, Trash2, Edit2, Save } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface DecisionStepProps {
@@ -11,12 +11,29 @@ interface DecisionStepProps {
 export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance, isDarkMode }) => {
   const [mediationSuccess, setMediationSuccess] = useState<boolean | null>(null);
   const [agreedTerms, setAgreedTerms] = useState<string[]>(['']);
+  const [savedTerms, setSavedTerms] = useState<boolean[]>([false]);
+  const [editingTermIndex, setEditingTermIndex] = useState<number | null>(null);
   const [failureReason, setFailureReason] = useState('');
-  const [nextSteps, setNextSteps] = useState('');
   const [officerNotes, setOfficerNotes] = useState('');
 
   const addTerm = () => {
-    setAgreedTerms([...agreedTerms, '']);
+    if (agreedTerms[agreedTerms.length - 1].trim() !== '') {
+      setAgreedTerms([...agreedTerms, '']);
+      setSavedTerms([...savedTerms, false]);
+    }
+  };
+
+  const startEditingTerm = (index: number) => {
+    setEditingTermIndex(index);
+  };
+
+  const saveTerm = (index: number) => {
+    if (agreedTerms[index].trim() !== '') {
+      const newSavedTerms = [...savedTerms];
+      newSavedTerms[index] = true;
+      setSavedTerms(newSavedTerms);
+      setEditingTermIndex(null);
+    }
   };
 
   const updateTerm = (index: number, value: string) => {
@@ -116,22 +133,46 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
             {agreedTerms.map((term, index) => (
               <div key={index} className="flex gap-2 items-start">
                 <div className="flex-1">
-                  <textarea
-                    value={term}
-                    onChange={(e) => updateTerm(index, e.target.value)}
-                    className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    rows={2}
-                    placeholder={`Term ${index + 1}: Describe what was agreed upon...`}
-                  />
+                  {editingTermIndex === index || !savedTerms[index] ? (
+                    <textarea
+                      value={term}
+                      onChange={(e) => updateTerm(index, e.target.value)}
+                      className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      rows={2}
+                      placeholder={`Term ${index + 1}: Describe what was agreed upon...`}
+                      autoFocus
+                    />
+                  ) : (
+                    <p className={`${isDarkMode ? 'bg-slate-700 text-white' : 'bg-gray-50 text-gray-900 border border-gray-300'} rounded-lg p-3 min-h-[60px] break-words`}>
+                      {term}
+                    </p>
+                  )}
                 </div>
-                {agreedTerms.length > 1 && (
-                  <button
-                    onClick={() => removeTerm(index)}
-                    className={`p-2 ${isDarkMode ? 'bg-red-900 hover:bg-red-800' : 'bg-red-100 hover:bg-red-200'} ${isDarkMode ? 'text-red-200' : 'text-red-700'} rounded-lg transition-colors flex items-center justify-center`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+                <div className="flex gap-2">
+                  {editingTermIndex === index || !savedTerms[index] ? (
+                    <button
+                      onClick={() => saveTerm(index)}
+                      className={`p-2 ${isDarkMode ? 'bg-green-900 hover:bg-green-800' : 'bg-green-100 hover:bg-green-200'} ${isDarkMode ? 'text-green-200' : 'text-green-700'} rounded-lg transition-colors flex items-center justify-center`}
+                    >
+                      <Save className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => startEditingTerm(index)}
+                      className={`p-2 ${isDarkMode ? 'bg-blue-900 hover:bg-blue-800' : 'bg-blue-100 hover:bg-blue-200'} ${isDarkMode ? 'text-blue-200' : 'text-blue-700'} rounded-lg transition-colors flex items-center justify-center`}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {agreedTerms.length > 1 && (
+                    <button
+                      onClick={() => removeTerm(index)}
+                      className={`p-2 ${isDarkMode ? 'bg-red-900 hover:bg-red-800' : 'bg-red-100 hover:bg-red-200'} ${isDarkMode ? 'text-red-200' : 'text-red-700'} rounded-lg transition-colors flex items-center justify-center`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
 
@@ -161,54 +202,37 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
         </div>
       )}
 
-      {/* Implementation Timeline / Next Steps */}
-      <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
-        <div className='flex items-center mb-4'>
-          <Clock className={`w-6 h-6 mr-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
-          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          {mediationSuccess ? 'Implementation Timeline' : 'Next Steps'}
-        </h3>
+      {/* Officer Notes - Always Required */}
+      {mediationSuccess !== null && (
+        <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
+          <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
+            Officer Notes <span className="text-red-500">*</span>
+          </h4>
+
+          <textarea
+            value={officerNotes}
+            onChange={(e) => setOfficerNotes(e.target.value)}
+            className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            rows={3}
+            placeholder="Any additional observations or context..."
+          />
         </div>
+      )}
 
-        <textarea
-          value={nextSteps}
-          onChange={(e) => setNextSteps(e.target.value)}
-          className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          rows={4}
-          placeholder={mediationSuccess 
-            ? "Outline actions to be taken, responsible parties, and deadlines..." 
-            : "State what happens next (e.g., formal investigation, case closure, etc.)..."
-          }
-        />
-      </div>
-
-      {/* Publication Options */}
-      <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
-        <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
-          Officer Notes (Optional)
-        </h4>
-
-        <textarea
-          value={officerNotes}
-          onChange={(e) => setOfficerNotes(e.target.value)}
-          className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          rows={3}
-          placeholder="Any additional observations or context..."
-        />
-      </div>
-
-      <div className="flex justify-end space-x-4">
-        <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
-          Save Draft
-        </button>
-        <button
-          onClick={handleAdvance}
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
-        >
-          <CheckCircle className="w-4 h-4 mr-2" />
-          Mark as Resolved
-        </button>
-      </div>
+      {mediationSuccess !== null && (
+        <div className="flex justify-end space-x-4">
+          <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
+            Save Draft
+          </button>
+          <button
+            onClick={handleAdvance}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Mark as Resolved
+          </button>
+        </div>
+      )}
     </div>
   );
 };
