@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Plus, Trash2, Users, Package } from 'lucide-react';
+import { Calendar, Clock, MapPin, Plus, Trash2, Users, Package, AlertCircle } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface Hearing {
@@ -39,7 +39,15 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
     'Respondent',
   ];
 
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+
   const addHearing = () => {
+    // Check if there are unsaved items
+    if (respondentItemInput.trim() || complainantItemInput.trim()) {
+      setShowUnsavedWarning(true);
+      return;
+    }
+
     if (newHearing.date && newHearing.time && newHearing.venue) {
       const hearing: Hearing = {
         id: Date.now().toString(),
@@ -57,6 +65,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
       });
       setRespondentItemInput('');
       setComplainantItemInput('');
+      setShowUnsavedWarning(false);
     }
   };
 
@@ -69,6 +78,13 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
       ...prev,
       attendees: prev.attendees.includes(attendee) ? [] : [attendee]
     }));
+    
+    // Clear corresponding input fields when toggling off
+    if (attendee === 'Respondent') {
+      setRespondentItemInput('');
+    } else if (attendee === 'Complainant') {
+      setComplainantItemInput('');
+    }
   };
 
   const addRespondentItem = () => {
@@ -111,6 +127,9 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
 
   const isRespondentSelected = newHearing.attendees.includes('Respondent');
   const isComplainantSelected = newHearing.attendees.includes('Complainant');
+
+  const hasUnsavedRespondentItem = respondentItemInput.trim().length > 0;
+  const hasUnsavedComplainantItem = complainantItemInput.trim().length > 0;
 
   return (
     <div className="space-y-6">
@@ -272,6 +291,12 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
+                {showUnsavedWarning && hasUnsavedRespondentItem && (
+                  <div className={`flex items-start gap-2 ${isDarkMode ? 'bg-blue-900 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-300 text-blue-800'} border rounded p-3`}>
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">You have an unsaved item. Please click the add button or clear the field before creating a new hearing.</span>
+                  </div>
+                )}
                 {newHearing.itemsForRespondent.length > 0 && (
                   <div className="space-y-2">
                     {newHearing.itemsForRespondent.map((item, idx) => (
@@ -315,6 +340,12 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
+                {showUnsavedWarning && hasUnsavedComplainantItem && (
+                  <div className={`flex items-start gap-2 ${isDarkMode ? 'bg-blue-900 border-blue-700 text-blue-200' : 'bg-blue-50 border-blue-300 text-blue-800'} border rounded p-3`}>
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">You have an unsaved item. Please click the add button or clear the field before creating a new hearing.</span>
+                  </div>
+                )}
                 {newHearing.itemsForComplainant.length > 0 && (
                   <div className="space-y-2">
                     {newHearing.itemsForComplainant.map((item, idx) => (

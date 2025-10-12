@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Upload, Eye, Plus, Download } from 'lucide-react';
+import { Search, Upload, Eye, Plus, Download, FileText, Trash2 } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface InvestigationStepProps {
@@ -22,6 +22,10 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
 
   const handleAdvance = () => {
     onAdvance('HEARING');
+  };
+
+  const handleDeleteClick = (index: number) => {
+    setEvidenceRequests(evidenceRequests.filter((_, i) => i !== index));
   };
 
   return (
@@ -80,8 +84,14 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
         
         <div className="space-y-3">
           {evidenceRequests.map((request, index) => (
-            <div key={index} className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-3`}>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{request}</p>
+            <div key={index} className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-3 flex items-center justify-between`}>
+              <div className="flex items-center gap-2">
+                <FileText size={18} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} />
+                <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm`}>{request}</p>
+              </div>
+              <button onClick={()=>{handleDeleteClick(index)}} className="p-1 hover:bg-opacity-50 rounded cursor-pointer">
+                <Trash2 size={18} className={isDarkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'} />
+              </button>
             </div>
           ))}
         </div>
@@ -109,9 +119,7 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
         <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
           Save Investigation
         </button>
-        <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
-          Request Additional Evidence
-        </button>
+
         <button
           onClick={handleAdvance}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
