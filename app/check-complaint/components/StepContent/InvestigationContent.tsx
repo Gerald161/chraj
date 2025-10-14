@@ -6,25 +6,36 @@ interface InvestigationContentProps {
 }
 
 export const InvestigationContent: React.FC<InvestigationContentProps> = ({ theme }) => {
-  const [medicalRecords, setMedicalRecords] = useState<File[]>([]);
-  const [witnessStatements, setWitnessStatements] = useState<File[]>([]);
+  const [medicalRecord, setMedicalRecord] = useState<File | null>(null);
+  const [witnessStatement, setWitnessStatement] = useState<File | null>(null);
 
-  const handleMedicalRecordsUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setMedicalRecords(prev => [...prev, ...files]);
+  const handleMedicalRecordUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setMedicalRecord(file);
+    }
   };
 
-  const handleWitnessStatementsUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setWitnessStatements(prev => [...prev, ...files]);
+  const handleWitnessStatementUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setWitnessStatement(file);
+    }
   };
 
-  const removeMedicalRecord = (indexToRemove: number) => {
-    setMedicalRecords(prev => prev.filter((_, index) => index !== indexToRemove));
+  const removeMedicalRecord = () => {
+    setMedicalRecord(null);
   };
 
-  const removeWitnessStatement = (indexToRemove: number) => {
-    setWitnessStatements(prev => prev.filter((_, index) => index !== indexToRemove));
+  const removeWitnessStatement = () => {
+    setWitnessStatement(null);
+  };
+
+  const handleSubmit = () => {
+    // Handle submission logic here
+    console.log('Medical Record:', medicalRecord);
+    console.log('Witness Statement:', witnessStatement);
+    alert('Files submitted successfully!');
   };
 
   return (
@@ -59,13 +70,12 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
           </div>
         </div>
 
-        {medicalRecords.length === 0 ? (
+        {!medicalRecord ? (
           <>
             <input
               type="file"
-              multiple
               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={handleMedicalRecordsUpload}
+              onChange={handleMedicalRecordUpload}
               className="hidden"
               id="medical-records-upload"
             />
@@ -74,61 +84,37 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
               className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors duration-200 flex items-center justify-center cursor-pointer"
             >
               <Upload className="w-5 h-5 mr-3" />
-              Upload Documents
+              Upload Document
             </label>
           </>
         ) : (
-          <div>
-            <div className="space-y-3 mb-4">
-              {medicalRecords.map((file, index) => (
-                <div 
-                  key={index} 
-                  className={`flex items-center justify-between p-4 rounded-lg ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 border border-gray-600' 
-                      : 'bg-gray-50 border border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className={theme === 'dark' ? "w-5 h-5 text-blue-400" : "w-5 h-5 text-blue-600"} />
-                    <div>
-                      <p className={theme === 'dark' ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
-                        {file.name}
-                      </p>
-                      <p className={theme === 'dark' ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
-                        {(file.size / 1024).toFixed(2)} KB
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => removeMedicalRecord(index)}
-                    className={`p-1 rounded-full transition-colors ${
-                      theme === 'dark' 
-                        ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
-                        : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
-                    }`}
-                    aria-label="Remove document"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              ))}
+          <div className={`flex items-center justify-between p-4 rounded-lg ${
+            theme === 'dark' 
+              ? 'bg-gray-700 border border-gray-600' 
+              : 'bg-gray-50 border border-gray-200'
+          }`}>
+            <div className="flex items-center gap-3">
+              <FileText className={theme === 'dark' ? "w-5 h-5 text-blue-400" : "w-5 h-5 text-blue-600"} />
+              <div>
+                <p className={theme === 'dark' ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
+                  {medicalRecord.name}
+                </p>
+                <p className={theme === 'dark' ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
+                  {(medicalRecord.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
             </div>
-            
-            <input
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={handleMedicalRecordsUpload}
-              className="hidden"
-              id="medical-records-upload-more"
-            />
-            <label 
-              htmlFor="medical-records-upload-more" 
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
+            <button
+              onClick={removeMedicalRecord}
+              className={`p-1 rounded-full transition-colors ${
+                theme === 'dark' 
+                  ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
+                  : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
+              }`}
+              aria-label="Remove document"
             >
-              Add More Files
-            </label>
+              <X size={18} />
+            </button>
           </div>
         )}
       </div>
@@ -145,13 +131,12 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
           </div>
         </div>
 
-        {witnessStatements.length === 0 ? (
+        {!witnessStatement ? (
           <>
             <input
               type="file"
-              multiple
               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={handleWitnessStatementsUpload}
+              onChange={handleWitnessStatementUpload}
               className="hidden"
               id="witness-statements-upload"
             />
@@ -160,63 +145,54 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
               className="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors duration-200 flex items-center justify-center cursor-pointer"
             >
               <Upload className="w-5 h-5 mr-3" />
-              Upload Witness Statements
+              Upload Witness Statement
             </label>
           </>
         ) : (
-          <div>
-            <div className="space-y-3 mb-4">
-              {witnessStatements.map((file, index) => (
-                <div 
-                  key={index} 
-                  className={`flex items-center justify-between p-4 rounded-lg ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 border border-gray-600' 
-                      : 'bg-gray-50 border border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className={theme === 'dark' ? "w-5 h-5 text-green-400" : "w-5 h-5 text-green-600"} />
-                    <div>
-                      <p className={theme === 'dark' ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
-                        {file.name}
-                      </p>
-                      <p className={theme === 'dark' ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
-                        {(file.size / 1024).toFixed(2)} KB
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => removeWitnessStatement(index)}
-                    className={`p-1 rounded-full transition-colors ${
-                      theme === 'dark' 
-                        ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
-                        : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
-                    }`}
-                    aria-label="Remove document"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              ))}
+          <div className={`flex items-center justify-between p-4 rounded-lg ${
+            theme === 'dark' 
+              ? 'bg-gray-700 border border-gray-600' 
+              : 'bg-gray-50 border border-gray-200'
+          }`}>
+            <div className="flex items-center gap-3">
+              <FileText className={theme === 'dark' ? "w-5 h-5 text-green-400" : "w-5 h-5 text-green-600"} />
+              <div>
+                <p className={theme === 'dark' ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
+                  {witnessStatement.name}
+                </p>
+                <p className={theme === 'dark' ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
+                  {(witnessStatement.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
             </div>
-            
-            <input
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={handleWitnessStatementsUpload}
-              className="hidden"
-              id="witness-statements-upload-more"
-            />
-            <label 
-              htmlFor="witness-statements-upload-more" 
-              className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
+            <button
+              onClick={removeWitnessStatement}
+              className={`p-1 rounded-full transition-colors ${
+                theme === 'dark' 
+                  ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
+                  : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
+              }`}
+              aria-label="Remove document"
             >
-              Add More Files
-            </label>
+              <X size={18} />
+            </button>
           </div>
         )}
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={handleSubmit}
+          disabled={!medicalRecord && !witnessStatement}
+          className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 ${
+            !medicalRecord && !witnessStatement
+              ? 'bg-gray-400 cursor-not-allowed opacity-50'
+              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
+          }`}
+        >
+          Submit All Files
+        </button>
       </div>
     </div>
   );
