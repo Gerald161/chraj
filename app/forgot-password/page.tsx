@@ -7,9 +7,14 @@ import Link from 'next/link'
 export default function ForgotPassPage() {
     const [isDarkMode, setIsDarkMode] = useState(true);
 
+    const [error, setError] = useState("");
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [success, setSuccess] = useState("");
+
     const [formData, setFormData] = useState({
-        userId: '',
-        rememberMe: false
+      email: '',
     });
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -18,27 +23,51 @@ export default function ForgotPassPage() {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
-    const handleLogin = () => {
-        // Handle login logic here
-        console.log('Login attempt:', formData);
-        alert('Login functionality would be implemented here!');
+    const handleReset = async() => {
+      setIsLoading(true);
+
+      if(formData.email.trim() == ""){
+        setIsLoading(false);
+        setError("Email field must not be empty")
+        return;
+      }
+
+      const formdata = new FormData();
+
+      formdata.append("email", formData.email);
+
+      const req = await fetch("http://127.0.0.1:8000/account/request-reset-email/", {
+        method: "POST",
+        body: formdata,
+      });
+
+      const response = await req.json();
+
+      if(response["error"] !== undefined){
+        setError(response["error"]);
+      }else{
+        setError("");
+        setSuccess(response["status"]);
+      }
+
+      setIsLoading(false);
     };
 
     const themeClasses = {
-        bg: isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-green-50',
-        cardBg: isDarkMode ? 'bg-gray-800/50 backdrop-blur border-gray-700/50' : 'bg-white',
-        text: isDarkMode ? 'text-white' : 'text-gray-900',
-        textSecondary: isDarkMode ? 'text-gray-300' : 'text-gray-600',
-        border: isDarkMode ? 'border-gray-700/50' : 'border-gray-200',
-        input: isDarkMode ? 'bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500',
+      bg: isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-green-50',
+      cardBg: isDarkMode ? 'bg-gray-800/50 backdrop-blur border-gray-700/50' : 'bg-white',
+      text: isDarkMode ? 'text-white' : 'text-gray-900',
+      textSecondary: isDarkMode ? 'text-gray-300' : 'text-gray-600',
+      border: isDarkMode ? 'border-gray-700/50' : 'border-gray-200',
+      input: isDarkMode ? 'bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500',
     };
 
     return (
-        <div className={`min-h-screen ${themeClasses.bg} flex items-center justify-center p-4 transition-colors duration-300`}>
+      <div className={`min-h-screen ${themeClasses.bg} flex items-center justify-center p-4 transition-colors duration-300`}>
         {/* Theme Toggle */}
         <button
             onClick={toggleTheme}
@@ -77,19 +106,19 @@ export default function ForgotPassPage() {
           </p>
         </div>
 
-        {/* Login Form */}
-        <div className="space-y-6">
-          {/* Email Field */}
+        <form onSubmit={(e)=>{
+          e.preventDefault();
+          handleReset();
+        }} className="space-y-6">
           <div>
-            
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} size={18} />
               </div>
               <input
                 type="text"
-                name="userId"
-                value={formData.userId}
+                name="email"
+                value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.input}`}
                 placeholder="Enter your email"
@@ -97,14 +126,26 @@ export default function ForgotPassPage() {
             </div>
           </div>
 
-          {/* Login Button */}
+          {
+            error !== "" &&
+            <p className={`pt-1.5 text-red-500`}>{error}</p>
+          }
+
+          {
+            success !== "" &&
+            <p className={`pt-1.5 ${themeClasses.textSecondary}`}>{success}</p>
+          }
+
           <button
-            onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            onClick={handleReset}
+            disabled={isLoading}
+            className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
-            Send
+            {
+              isLoading ? "Sending" : "Send"
+            }
           </button>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className="mt-6 text-center">

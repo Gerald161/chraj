@@ -80,8 +80,6 @@ export default function DashboardPage() {
         
         {activeSection === 'available-cases' && (
           <AvailableCases 
-            cases={cases} 
-            onCaseSelect={handleCaseSelect} 
             isDarkMode={isDarkMode}
           />
         )}

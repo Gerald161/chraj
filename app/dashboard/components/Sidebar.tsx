@@ -1,14 +1,15 @@
-import React from 'react';
+"use client"
+
 import { 
-  Home, 
   FileText, 
   FolderOpen, 
   Bell, 
   Calendar, 
-  // Settings, 
   LogOut,
   Building2
 } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   activeSection: string;
@@ -17,6 +18,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSection, isDarkMode }) => {
+  const router = useRouter()
+
   const menuItems = [
     // { id: 'overview', label: 'Overview', icon: Home },
     { id: 'available-cases', label: 'Available Cases', icon: FileText },
@@ -24,6 +27,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
     { id: 'notifications', label: 'Notifications', icon: Bell, badge: 2 },
     { id: 'appointments', label: 'Appointments', icon: Calendar },
   ];
+
+  async function handleLogout(){
+    const myHeaders = new Headers();
+
+    const token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    var req = await fetch("http://127.0.0.1:8000/account/logout", {
+      method: "POST",
+      headers: myHeaders
+    });
+
+    var response = await req.json();
+
+    if(response["status"] == "logged out"){
+      localStorage.clear();
+
+      router.replace("/");
+    }
+  }
 
   return (
     <div className={`w-64 flex flex-col h-screen border-r ${
@@ -80,12 +104,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
           <Settings className="w-5 h-5" />
           <span>Settings</span>
         </button> */}
-        <button className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors mt-2 ${
+        <button className={`w-full cursor-pointer flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors mt-2 ${
           isDarkMode 
             ? 'text-slate-300 hover:bg-slate-800 hover:text-white' 
             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-        }`}>
-          <LogOut className="w-5 h-5" />
+        }`}
+          onClick={()=>{
+            handleLogout();
+          }}
+        >
+          <LogOut className="w-5 h-5"/>
           <span>Logout</span>
         </button>
       </div>

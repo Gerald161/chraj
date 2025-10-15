@@ -1,19 +1,30 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Shield, User, Eye, EyeOff, Sun, Moon, ArrowLeft, Lock } from 'lucide-react';
+import { Shield, Eye, EyeOff, Sun, Moon, ArrowLeft, Lock } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function ConfirmPasswordPage() {
     const [isDarkMode, setIsDarkMode] = useState(true);
     
     const [showPassword, setShowPassword] = useState(false);
 
+    const [error, setError] = useState("");
+
+    const [success, setSuccess] = useState("");
+
     const [formData, setFormData] = useState({
-        userId: '',
-        password: '',
-        rememberMe: false
+      password: '',
     });
+
+    const searchParams = useSearchParams();
+ 
+    const id = searchParams.get('id');
+
+    const token = searchParams.get('token');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -23,14 +34,39 @@ export default function ConfirmPasswordPage() {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
-    const handleLogin = () => {
-        // Handle login logic here
-        console.log('Login attempt:', formData);
-        alert('Login functionality would be implemented here!');
+    const handleReset = async () => {
+      setIsLoading(true);
+
+      if(formData.password.trim() == ""){
+        setIsLoading(false);
+
+        setError("Password field must not be empty")
+        return;
+      }
+
+      const formdata = new FormData();
+
+      formdata.append("password", formData.password);
+
+      const req = await fetch(`http://127.0.0.1:8000/account/password-reset/${id}/${token}`, {
+        method: "PUT",
+        body: formdata
+      })
+
+      const response = await req.json();
+
+      if(response["error"] !== undefined){
+        setError(response["error"]);
+      }else{
+        setError("");
+        setSuccess(response["status"]);
+      }
+
+      setIsLoading(false);
     };
 
     const themeClasses = {
@@ -85,10 +121,6 @@ export default function ConfirmPasswordPage() {
         {/* Login Form */}
         <div className="space-y-6">
             {/* Password Field */}
-            <div>
-            <label className={`block text-sm font-semibold ${themeClasses.text} mb-3`}>
-                Password
-            </label>
             <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} size={18} />
@@ -113,45 +145,25 @@ export default function ConfirmPasswordPage() {
                 )}
                 </button>
             </div>
-            </div>
 
-            {/* Password Field */}
-          <div>
-            <label className={`block text-sm font-semibold ${themeClasses.text} mb-3`}>
-              Confirm Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} size={18} />
-              </div>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.input}`}
-                placeholder="Confirm password"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              >
-                {showPassword ? (
-                  <EyeOff className={`${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'}`} size={18} />
-                ) : (
-                  <Eye className={`${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'}`} size={18} />
-                )}
-              </button>
-            </div>
-          </div>
+            {
+              error !== "" &&
+              <p className={`pt-1.5 text-red-500`}>{error}</p>
+            }
+
+            {
+              success !== "" &&
+              <p className={`pt-1.5 ${themeClasses.textSecondary}`}>{success}</p>
+            }
 
             {/* Save Button */}
             <button
-                onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                Save
+              onClick={handleReset}
+              className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+              {
+                isLoading ? "Saving" : "Save"
+              }
             </button>
         </div>
 
