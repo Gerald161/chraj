@@ -6,26 +6,51 @@ import Link from 'next/link';
 
 export default function FileComplaint() {
     const [isDarkMode, setIsDarkMode] = useState(true);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [complainant_ref_id, setComplainantRefID] = useState("");
+
+    const [isSaved, setIsSaved] = useState(false);
+
     const [formData, setFormData] = useState<{
         fullName: string;
-        phoneNumber: string;
         emailAddress: string;
         location: string;
-        complaintCategory: string;
+        respondentName: string;
+        respondentEmail: string;
         subjectTitle: string;
         detailedDescription: string;
         dateOfIncident: string;
         supportingDocuments: File[];
     }>({
         fullName: '',
-        phoneNumber: '',
         emailAddress: '',
         location: '',
-        complaintCategory: '',
+        respondentName: '',
+        respondentEmail: '',
         subjectTitle: '',
         detailedDescription: '',
         dateOfIncident: '',
         supportingDocuments: []
+    });
+
+    const [formDataErrors, setFormDataErrors] = useState<{
+        fullName: string;
+        emailAddress: string;
+        location: string;
+        respondentName: string;
+        respondentEmail: string;
+        subjectTitle: string;
+        detailedDescription: string;
+    }>({
+        fullName: '',
+        emailAddress: '',
+        location: '',
+        respondentName: '',
+        respondentEmail: '',
+        subjectTitle: '',
+        detailedDescription: ''
     });
 
     const toggleTheme = () => {
@@ -55,9 +80,77 @@ export default function FileComplaint() {
         }));
     };
 
-    const handleSubmit = () => {
-        console.log('Form submitted:', formData);
-        alert('Complaint submitted successfully!');
+    const handleSubmit = async() => {
+        if(isSaved){
+            console.log("have to start a new session")
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        // Reset errors
+        setFormDataErrors({
+            fullName: '',
+            emailAddress: '',
+            location: '',
+            respondentName: '',
+            respondentEmail: '',
+            subjectTitle: '',
+            detailedDescription: ''
+        });
+
+        // Validate all fields
+        const errors = {
+            fullName: formData.fullName.trim() === '' ? 'Full name is required' : '',
+            emailAddress: formData.emailAddress.trim() === '' ? 'Email address is required' : '',
+            location: formData.location.trim() === '' ? 'Location is required' : '',
+            respondentName: formData.respondentName.trim() === '' ? 'Respondent name is required' : '',
+            respondentEmail: formData.respondentEmail.trim() === '' ? 'Respondent email is required' : '',
+            subjectTitle: formData.subjectTitle.trim() === '' ? 'Subject/Title is required' : '',
+            detailedDescription: formData.detailedDescription.trim() === '' ? 'Detailed description is required' : ''
+        };
+
+        // Check if there are any errors
+        const hasErrors = Object.values(errors).some(error => error !== '');
+
+        if (hasErrors) {
+            setFormDataErrors(errors);
+
+            setIsSubmitting(false);
+
+            return;
+        }else{
+            const formdatatosend = new FormData();
+
+            formdatatosend.append("title", formData.subjectTitle);
+
+            formdatatosend.append("description", formData.detailedDescription);
+            formdatatosend.append("location", formData.location);
+            formdatatosend.append("complainant", formData.fullName);
+            formdatatosend.append("respondent", formData.respondentName);
+            formdatatosend.append("complainant_email", formData.emailAddress);
+            formdatatosend.append("respondent_email", formData.respondentEmail);
+
+            if(formData.supportingDocuments.length !== 0){
+                formData.supportingDocuments.forEach((image)=>{
+                    formdatatosend.append(`${image.name}`, image)
+                })
+            }
+
+            const req = await fetch("http://127.0.0.1:8000/complaints/create-complaint", {
+                method: "POST",
+                body: formdatatosend
+            });
+
+            const res = await req.json();
+
+            if(res["status"] == "saved"){
+                setIsSaved(true);
+                setComplainantRefID(res["complainant_ref_id"]);
+            }
+
+            setIsSubmitting(false);
+        }
     };
 
     const themeClasses = {
@@ -95,15 +188,16 @@ export default function FileComplaint() {
 
     return (
         <div className={themeClasses.container}>
-            <Link
-                href={"/"}
-                className={`fixed top-6 left-6 p-3 rounded-full shadow-lg transition-all duration-300 z-10 ${
-                    isDarkMode
-                    ? 'bg-gray-800/50 backdrop-blur border border-gray-700/50 text-gray-300 hover:bg-gray-700/50 hover:text-white' 
-                    : 'bg-white text-gray-700 hover:bg-gray-100 shadow-md'
-                }`}
-            >
-                <ArrowLeft size={20} />
+            <Link href={"/"}>
+                <button
+                    className={`fixed top-6 cursor-pointer left-6 p-3 rounded-full shadow-lg transition-all duration-300 z-10 ${
+                        isDarkMode
+                        ? 'bg-gray-800/50 backdrop-blur border border-gray-700/50 text-gray-300 hover:bg-gray-700/50 hover:text-white' 
+                        : 'bg-white text-gray-700 hover:bg-gray-100 shadow-md'
+                    }`}
+                >
+                    <ArrowLeft size={20} />
+                </button>
             </Link>
 
             {/* Theme Toggle Button */}
@@ -118,228 +212,259 @@ export default function FileComplaint() {
             <div className="max-w-4xl mx-auto px-6 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
-                <div className={themeClasses.fileIcon}>
-                    <FileText className="w-10 h-10 text-red-500" />
-                </div>
-                
-                <h2 className="text-2xl font-bold mb-2">Submit Your Complaint</h2>
-                <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
-                    Provide detailed information about your complaint for proper investigation
-                </p>
+                    <div className={themeClasses.fileIcon}>
+                        <FileText className="w-10 h-10 text-red-500" />
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold mb-2">Submit Your Complaint</h2>
+                    <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
+                        Provide detailed information about your complaint for proper investigation
+                    </p>
                 </div>
 
                 {/* Form */}
-                <div className={themeClasses.formContainer + " rounded-lg shadow-lg p-8"}>
-                <div className="space-y-8">
-                    {/* Personal Information */}
-                    <section>
-                    <h3 className="text-xl font-semibold mb-6">Personal Information</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Full Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="fullName"
-                            placeholder="Enter your full name"
-                            value={formData.fullName}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                        />
-                        </div>
+                <form onSubmit={(e)=>{
+                    e.preventDefault();
+                    handleSubmit();
+                }} className={themeClasses.formContainer + " rounded-lg shadow-lg p-8"}>
+                    <div className="space-y-8">
+                        {/* Personal Information */}
+                        <section>
+                        <h3 className="text-xl font-semibold mb-6">Personal Information</h3>
                         
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Phone Number <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="tel"
-                            name="phoneNumber"
-                            placeholder="Enter your phone number"
-                            value={formData.phoneNumber}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                        />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            name="emailAddress"
-                            placeholder="Enter your email"
-                            value={formData.emailAddress}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                        />
-                        </div>
-                        
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Location
-                        </label>
-                        <input
-                            type="text"
-                            name="location"
-                            placeholder="City/Town"
-                            value={formData.location}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                        />
-                        </div>
-                    </div>
-                    </section>
-
-                    {/* Complaint Details */}
-                    <section>
-                    <h3 className="text-xl font-semibold mb-6">Complaint Details</h3>
-                    
-                    <div className="space-y-6">
                         <div>
                             <label className="block text-sm font-medium mb-2">
-                                Subject/Title <span className="text-red-500">*</span>
+                                Full Name <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                name="subjectTitle"
-                                placeholder="Brief title of your complaint"
-                                value={formData.subjectTitle}
+                                name="fullName"
+                                placeholder="Enter your full name"
+                                value={formData.fullName}
                                 onChange={handleInputChange}
                                 className={themeClasses.input}
                             />
+                            {formDataErrors.fullName !== '' && (
+                                <p className="text-red-500 text-sm mt-1">{formDataErrors.fullName}</p>
+                            )}
                         </div>
 
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Detailed Description <span className="text-red-500">*</span>
-                        </label>
-                        <textarea
-                            name="detailedDescription"
-                            placeholder="Provide a detailed description of your complaint..."
-                            rows={6}
-                            value={formData.detailedDescription}
-                            onChange={handleInputChange}
-                            className={themeClasses.textarea}
-                        />
-                        </div>
-
-                        <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Date of Incident
-                        </label>
-                        <div className="relative">
-                            <input
-                            type="date"
-                            name="dateOfIncident"
-                            value={formData.dateOfIncident}
-                            onChange={handleInputChange}
-                            className={themeClasses.input}
-                            />
-                        </div>
-                        </div>
-                    </div>
-                    </section>
-
-                    {/* Supporting Documents */}
-                    <section>
-                    <h3 className="text-xl font-semibold mb-6">Supporting Documents</h3>
-                    
-                    {formData.supportingDocuments.length === 0 ? (
-                        <div className={themeClasses.uploadArea}>
-                            <input
-                                type="file"
-                                multiple
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="file-upload"
-                            />
-                            <label htmlFor="file-upload" className="cursor-pointer block">
-                                <Upload className={isDarkMode ? "w-12 h-12 text-gray-400 mx-auto mb-4" : "w-12 h-12 text-gray-400 mx-auto mb-4"} />
-                                <p className={themeClasses.uploadText}>
-                                    Upload supporting documents
-                                </p>
-                                <p className={themeClasses.uploadSubtext}>
-                                    PDF, DOC, JPG, PNG files up to 10MB each
-                                </p>
-                                <div className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block">
-                                    Choose Files
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Email Address
                             </label>
-                        </div>
-                    ) : (
-                        <div>
-                            <div className="space-y-3 mb-4">
-                                {formData.supportingDocuments.map((file, index) => (
-                                    <div 
-                                        key={index} 
-                                        className={`flex items-center justify-between p-4 rounded-lg ${
-                                            isDarkMode 
-                                            ? 'bg-gray-700 border border-gray-600' 
-                                            : 'bg-gray-50 border border-gray-200'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <FileText className={isDarkMode ? "w-5 h-5 text-blue-400" : "w-5 h-5 text-blue-600"} />
-                                            <div>
-                                                <p className={isDarkMode ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
-                                                    {file.name}
-                                                </p>
-                                                <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
-                                                    {(file.size / 1024).toFixed(2)} KB
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => removeDocument(index)}
-                                            className={`p-1 rounded-full transition-colors ${
-                                                isDarkMode 
-                                                ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
-                                                : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
-                                            }`}
-                                            aria-label="Remove document"
-                                        >
-                                            <X size={18} />
-                                        </button>
-                                    </div>
-                                ))}
+                            <input
+                                type="email"
+                                name="emailAddress"
+                                placeholder="Enter your email"
+                                value={formData.emailAddress}
+                                onChange={handleInputChange}
+                                className={themeClasses.input}
+                            />
+                            {formDataErrors.emailAddress !== '' && (
+                                <p className="text-red-500 text-sm mt-1">{formDataErrors.emailAddress}</p>
+                            )}
                             </div>
                             
-                            <input
-                                type="file"
-                                multiple
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="file-upload-more"
-                            />
-                            <label 
-                                htmlFor="file-upload-more" 
-                                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                            >
-                                Add More Files
+                            <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Location
                             </label>
+                            <input
+                                type="text"
+                                name="location"
+                                placeholder="City/Town"
+                                value={formData.location}
+                                onChange={handleInputChange}
+                                className={themeClasses.input}
+                            />
+                            {formDataErrors.location !== '' && (
+                                <p className="text-red-500 text-sm mt-1">{formDataErrors.location}</p>
+                            )}
+                            </div>
                         </div>
-                    )}
-                    </section>
+                        </section>
 
-                    {/* Submit Button */}
-                    <div className="flex justify-center">
-                    <button
-                        onClick={handleSubmit}
-                        className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                    >
-                        Submit Complaint
-                    </button>
+                        {/* Complaint Details */}
+                        <section>
+                        <h3 className="text-xl font-semibold mb-6">Complaint Details</h3>
+                        
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">
+                                        Respondent Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="respondentName"
+                                        placeholder="Name of the respondent"
+                                        value={formData.respondentName}
+                                        onChange={handleInputChange}
+                                        className={themeClasses.input}
+                                    />
+                                    {formDataErrors.respondentName !== '' && (
+                                        <p className="text-red-500 text-sm mt-1">{formDataErrors.respondentName}</p>
+                                    )}
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">
+                                        Respondent Email <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="respondentEmail"
+                                        placeholder="Email of the respondent"
+                                        value={formData.respondentEmail}
+                                        onChange={handleInputChange}
+                                        className={themeClasses.input}
+                                    />
+                                    {formDataErrors.respondentEmail !== '' && (
+                                        <p className="text-red-500 text-sm mt-1">{formDataErrors.respondentEmail}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Subject/Title <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="subjectTitle"
+                                    placeholder="Brief title of your complaint"
+                                    value={formData.subjectTitle}
+                                    onChange={handleInputChange}
+                                    className={themeClasses.input}
+                                />
+
+                                {formDataErrors.subjectTitle !== '' && (
+                                    <p className="text-red-500 text-sm mt-1">{formDataErrors.subjectTitle}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Detailed Description <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    name="detailedDescription"
+                                    placeholder="Provide a detailed description of your complaint..."
+                                    rows={6}
+                                    value={formData.detailedDescription}
+                                    onChange={handleInputChange}
+                                    className={themeClasses.textarea}
+                                />
+                                {formDataErrors.detailedDescription !== '' && (
+                                    <p className="text-red-500 text-sm mt-1">{formDataErrors.detailedDescription}</p>
+                                )}
+                            </div>
+                        </div>
+                        </section>
+
+                        {/* Supporting Documents */}
+                        <section>
+                        <h3 className="text-xl font-semibold mb-6">Supporting Documents</h3>
+                        
+                        {formData.supportingDocuments.length === 0 ? (
+                            <div className={themeClasses.uploadArea}>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                    id="file-upload"
+                                />
+                                <label htmlFor="file-upload" className="cursor-pointer block">
+                                    <Upload className={isDarkMode ? "w-12 h-12 text-gray-400 mx-auto mb-4" : "w-12 h-12 text-gray-400 mx-auto mb-4"} />
+                                    <p className={themeClasses.uploadText}>
+                                        Upload supporting documents
+                                    </p>
+                                    <p className={themeClasses.uploadSubtext}>
+                                        PDF, DOC, JPG, PNG files up to 10MB each
+                                    </p>
+                                    <div className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block">
+                                        Choose Files
+                                    </div>
+                                </label>
+                            </div>
+                        ) : (
+                            <div>
+                                <div className="space-y-3 mb-4">
+                                    {formData.supportingDocuments.map((file, index) => (
+                                        <div 
+                                            key={index} 
+                                            className={`flex items-center justify-between p-4 rounded-lg ${
+                                                isDarkMode 
+                                                ? 'bg-gray-700 border border-gray-600' 
+                                                : 'bg-gray-50 border border-gray-200'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <FileText className={isDarkMode ? "w-5 h-5 text-blue-400" : "w-5 h-5 text-blue-600"} />
+                                                <div>
+                                                    <p className={isDarkMode ? "text-sm font-medium text-white" : "text-sm font-medium text-gray-900"}>
+                                                        {file.name}
+                                                    </p>
+                                                    <p className={isDarkMode ? "text-xs text-gray-400" : "text-xs text-gray-500"}>
+                                                        {(file.size / 1024).toFixed(2)} KB
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => removeDocument(index)}
+                                                className={`p-1 rounded-full transition-colors ${
+                                                    isDarkMode 
+                                                    ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' 
+                                                    : 'hover:bg-gray-200 text-gray-500 hover:text-red-600'
+                                                }`}
+                                                aria-label="Remove document"
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                    id="file-upload-more"
+                                />
+                                <label 
+                                    htmlFor="file-upload-more" 
+                                    className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Add More Files
+                                </label>
+                            </div>
+                        )}
+                        </section>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-center">
+                            <button
+                                disabled={isSubmitting || isSaved}
+                                className={`bg-red-600 ${isSaved ? "cursor-not-allowed"  : "cursor-pointer"} text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2`}
+                            >
+                                {
+                                    isSubmitting ? "Submitting" :
+                                    "Submit Complaint"
+                                }
+                            </button>
+                        </div>
+                        {
+                            isSaved &&
+                            <p className='text-xl'>Complaint has been added, you can check the status from the main page with your reference ID "{complainant_ref_id}", refresh the page if you want to lodge another complaint</p>
+                        }
                     </div>
-                </div>
-                </div>
+                </form>
             </div>
         </div>
     )
