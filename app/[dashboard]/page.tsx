@@ -27,12 +27,6 @@ export default function DashboardPage() {
     setSelectedCase(updatedCase);
   };
 
-  const handleCloseDetail = () => {
-    setSelectedCase(null);
-    setActiveSection('my-cases');
-  };
-
-
   const handleToggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };

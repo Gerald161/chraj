@@ -49,19 +49,17 @@ export default function CaseDetailsPage({
       formdata.append("mandate_decision", "False");
     }
 
-    setIsSaved(true)
+    var req = await fetch("http://127.0.0.1:8000/complaints/mandate-decision", {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata
+    })
 
-    // var req = await fetch("http://127.0.0.1:8000/complaints/mandate-decision", {
-    //   method: "POST",
-    //   headers: myHeaders,
-    //   body: formdata
-    // })
+    var res = await req.json();
 
-    // var res = await req.json();
-
-    // if(res["status"] === "saved"){
-    //   setIsSaved(true);
-    // }
+    if(res["status"].toLowerCase() === "saved"){
+      setIsSaved(true);
+    }
   };
 
   return (
