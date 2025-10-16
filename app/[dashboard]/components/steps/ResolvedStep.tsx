@@ -17,9 +17,6 @@ export const ResolvedStep: React.FC<ResolvedStepProps> = ({ caseData, onClose, i
           <CheckCircle className="w-12 h-12 text-white" />
         </div>
         <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>Case Successfully Resolved</h2>
-        <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-lg`}>
-          Case #{caseData.caseNumber} has been completed and closed
-        </p>
       </div>
 
       {/* Case Summary */}
@@ -39,31 +36,6 @@ export const ResolvedStep: React.FC<ResolvedStepProps> = ({ caseData, onClose, i
               <div>
                 <label className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Respondent</label>
                 <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{caseData.respondent || 'Not specified'}</p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="space-y-3">
-              <div>
-                <label className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Date Created</label>
-                <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {new Date(caseData.dateCreated).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <label className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Date Resolved</label>
-                <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {new Date(caseData.lastUpdated).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <label className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'} text-sm`}>Assigned Officer</label>
-                <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
-                  <User className="w-4 h-4 mr-2" />
-                  {caseData.assignedOfficer}
-                </p>
               </div>
             </div>
           </div>

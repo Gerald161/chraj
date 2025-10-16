@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Upload, Eye, Plus, Download, FileText, Trash2 } from 'lucide-react';
+import { Search, Upload, Plus, Download, FileText, Trash2 } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
 interface InvestigationStepProps {
@@ -52,21 +52,20 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
           <div>
             <h4 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-3`}>Submitted Documents</h4>
             <div className="space-y-2">
-              {caseData.documents.map((doc) => (
-                <div key={doc.id} className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-3 flex items-center justify-between`}>
+              {caseData.documents?.map((doc, index) => (
+                <a href={`http://127.0.0.1:8000/media/${doc}`} target='_blank' key={index} className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-3 flex items-center justify-between`}>
                   <div className="flex items-center">
-                    <Eye className="w-4 h-4 text-blue-400 mr-2" />
+                    <FileText className="w-4 h-4 text-blue-400 mr-2" />
                     <div>
-                      <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-medium`}>{doc.name}</p>
-                      <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} text-xs`}>Uploaded {doc.uploadDate}</p>
+                      <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-sm font-medium`}>{doc}</p>
                     </div>
                   </div>
                   <button className="text-blue-400 hover:text-blue-300">
                     <Download className="w-4 h-4" />
                   </button>
-                </div>
+                </a>
               ))}
-              {caseData.documents.length === 0 && (
+              {caseData.documents?.length === 0 && (
                 <div className={`${isDarkMode ? 'bg-slate-700' : 'bg-gray-50 border border-gray-200'} rounded-lg p-4 text-center`}>
                   <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-500'} text-sm`}>No documents submitted yet</p>
                 </div>

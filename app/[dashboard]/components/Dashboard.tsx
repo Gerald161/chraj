@@ -14,23 +14,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ cases, onCaseSelect, isDar
   const [statusFilter, setStatusFilter] = useState('All Status');
 
   const filteredCases = cases.filter(caseItem => {
-    const matchesSearch = caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         caseItem.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         caseItem.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesSearch = caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        caseItem.description.toLowerCase().includes(searchTerm.toLowerCase())
     
-    const matchesStatus = statusFilter === 'All Status' || caseItem.status === statusFilter;
+    const matchesStatus = statusFilter === 'All Status';
     
     return matchesSearch && matchesStatus;
   });
 
   const statusOptions = [
     'All Status',
-    'INITIAL_REVIEW',
-    'INVESTIGATION',
-    'HEARING',
-    'MEDIATION',
-    'DECISION',
-    'RESOLVED'
+    'intial',
+    'investigation',
+    'hearing',
+    'mediation',
+    'decision',
+    'resolved'
   ];
 
   return (

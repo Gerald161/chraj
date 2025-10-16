@@ -17,17 +17,17 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'INITIAL_REVIEW':
+      case 'initial':
         return isDarkMode ? 'bg-blue-600' : 'bg-blue-500';
-      case 'INVESTIGATION':
+      case 'investigation':
         return isDarkMode ? 'bg-purple-600' : 'bg-purple-500';
-      case 'HEARING':
+      case 'hearing':
         return isDarkMode ? 'bg-indigo-600' : 'bg-indigo-500';
-      case 'MEDIATION':
+      case 'mediation':
         return isDarkMode ? 'bg-orange-600' : 'bg-orange-500';
-      case 'DECISION':
+      case 'decision':
         return isDarkMode ? 'bg-yellow-600' : 'bg-yellow-500';
-      case 'RESOLVED':
+      case 'resolved':
         return isDarkMode ? 'bg-green-600' : 'bg-green-500';
       default:
         return isDarkMode ? 'bg-gray-600' : 'bg-gray-500';
@@ -36,17 +36,17 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'INITIAL_REVIEW':
+      case 'initial':
         return 'INITIAL REVIEW';
-      case 'INVESTIGATION':
-        return 'INVESTIGATING';
-      case 'HEARING':
+      case 'investigation':
+        return 'INVESTIGATION';
+      case 'hearing':
         return 'HEARING';
-      case 'MEDIATION':
+      case 'mediation':
         return 'MEDIATION';
-      case 'DECISION':
+      case 'decision':
         return 'DECISION';
-      case 'RESOLVED':
+      case 'resolved':
         return 'RESOLVED';
       default:
         return status;
@@ -81,11 +81,11 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
       <div className={`flex items-center text-sm space-x-6 mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
         <div className="flex items-center space-x-1">
           <FileText className="w-4 h-4" />
-          <span>{caseData.caseNumber}</span>
+          <span>{caseData.id}</span>
         </div>
         <div className="flex items-center space-x-1">
           <Calendar className="w-4 h-4" />
-          <span>{new Date(caseData.dateCreated).toLocaleDateString()}</span>
+          <span>{caseData.dateSubmitted}</span>
         </div>
         {caseData.respondent && (
           <div className="flex items-center space-x-1">
@@ -99,12 +99,12 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Progress</span>
-            <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{caseData.progress}%</span>
+            <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{caseData.status == "hearing" ? "20" : "50"}%</span>
           </div>
           <div className={`w-full rounded-full h-2 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
             <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${caseData.progress}%` }}
+              style={{ width: `${caseData.status == "hearing" ? "20" : "50"}%` }}
             />
           </div>
         </div>
