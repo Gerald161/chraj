@@ -8,11 +8,9 @@ interface CaseData{
   complainant: string;
   respondent: string;
   dateSubmitted: string;
-  status: string;
   documents?: string[];
   additionalDetails?: {
     location?: string;
-    incidentDate?: string;
   };
 }
 

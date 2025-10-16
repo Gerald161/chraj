@@ -15,27 +15,53 @@ interface CaseDetailsPageProps {
     documents?: string[];
     additionalDetails?: {
       location?: string;
-      incidentDate?: string;
-      witnesses?: string[];
     };
   };
   onBack: () => void;
-  onAcceptCase: (notes: string) => void;
-  onRejectCase: (notes: string, reason: string) => void;
   isDarkMode: boolean;
 }
 
 export default function CaseDetailsPage({
   caseData,
   onBack,
-  onAcceptCase,
-  onRejectCase,
   isDarkMode=true
 }: CaseDetailsPageProps) {
   const [mandateStatus, setMandateStatus] = useState<'within' | 'outside' | null>(null);
 
-  const handleSubmit = () => {
-    
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSubmit = async() => {
+    const myHeaders = new Headers();
+
+    var token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    const formdata = new FormData();
+
+    formdata.append("case_id", caseData.id);
+
+    if(mandateStatus == "within"){
+      formdata.append("mandate_decision", "True");
+    }
+
+    if(mandateStatus == "outside"){
+      formdata.append("mandate_decision", "False");
+    }
+
+    setIsSaved(true)
+
+    // var req = await fetch("http://127.0.0.1:8000/complaints/mandate-decision", {
+    //   method: "POST",
+    //   headers: myHeaders,
+    //   body: formdata
+    // })
+
+    // var res = await req.json();
+
+    // if(res["status"] === "saved"){
+    //   setIsSaved(true);
+    // }
   };
 
   return (
@@ -116,15 +142,6 @@ export default function CaseDetailsPage({
                 <h2 className="text-xl font-semibold mb-4">Additional Information</h2>
 
                 <div className="space-y-4">
-                  {caseData.additionalDetails.incidentDate && (
-                    <div>
-                      <label className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                        Incident Date
-                      </label>
-                      <p className="mt-1">{caseData.additionalDetails.incidentDate}</p>
-                    </div>
-                  )}
-
                   {caseData.additionalDetails.location && (
                     <div>
                       <label className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
@@ -145,7 +162,8 @@ export default function CaseDetailsPage({
 
                 <div className="space-y-2">
                   {caseData.documents.map((doc, idx) => (
-                    <div
+                    <a href={`http://127.0.0.1:8000/media/${doc}`}
+                      target='_blank'
                       key={idx}
                       className={`flex items-center gap-3 p-3 rounded-lg ${
                         isDarkMode ? 'bg-slate-900 hover:bg-slate-900/80' : 'bg-gray-50 hover:bg-gray-100'
@@ -153,7 +171,7 @@ export default function CaseDetailsPage({
                     >
                       <FileText size={20} className={isDarkMode ? 'text-blue-400' : 'text-blue-600'} />
                       <span className="flex-1">{doc}</span>
-                    </div>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -162,13 +180,15 @@ export default function CaseDetailsPage({
 
           {/* Action Panel */}
           <div className="">
-            <div className={`rounded-lg p-6 sticky top-8 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}>
+            <div className={`rounded-lg p-6 sticky top-8 mt-6 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}>
               <h2 className="text-xl font-semibold mb-6">Mandate Assessment</h2>
 
               {/* Mandate Options */}
               <div className="space-y-3 mb-6">
                 <button
-                  onClick={() => setMandateStatus('within')}
+                  onClick={() => 
+                    !isSaved && setMandateStatus('within')
+                  }
                   className={`cursor-pointer w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
                     mandateStatus === 'within'
                       ? 'border-green-500 bg-green-500/10'
@@ -194,7 +214,9 @@ export default function CaseDetailsPage({
                 </button>
 
                 <button
-                  onClick={() => setMandateStatus('outside')}
+                  onClick={() => 
+                    !isSaved && setMandateStatus('outside')
+                  }
                   className={`cursor-pointer w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
                     mandateStatus === 'outside'
                       ? 'border-red-500 bg-red-500/10'
@@ -239,7 +261,7 @@ export default function CaseDetailsPage({
               <button
                 onClick={handleSubmit}
                 disabled={!mandateStatus}
-                className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
+                className={`w-full ${!isSaved ?"cursor-pointer" : "cursor-not-allowed"} py-3 px-4 rounded-lg font-medium transition-all ${
                   mandateStatus === 'within'
                     ? 'bg-green-600 hover:bg-green-700 text-white'
                     : mandateStatus === 'outside'
@@ -251,6 +273,11 @@ export default function CaseDetailsPage({
               >
                 {mandateStatus === 'within' ? 'Accept Case' : mandateStatus === 'outside' ? 'Close as Outside Mandate' : 'Select Mandate Status'}
               </button>
+
+              {
+                isSaved  &&
+                <p className='text-xl mt-3'>Complaint status has been updated!</p>
+              }
             </div>
           </div>
         </div>

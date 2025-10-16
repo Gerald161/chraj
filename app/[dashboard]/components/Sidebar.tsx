@@ -21,7 +21,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
   const router = useRouter()
 
   const menuItems = [
-    // { id: 'overview', label: 'Overview', icon: Home },
     { id: 'available-cases', label: 'Available Cases', icon: FileText },
     { id: 'my-cases', label: 'My Cases', icon: FolderOpen },
     { id: 'notifications', label: 'Notifications', icon: Bell, badge: 2 },

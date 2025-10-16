@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { AvailableCaseListItem } from './AvailableCaseListItem';
 import CaseDetailsPage from './CaseDetailsPage';
@@ -14,7 +14,7 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
 
   const [selectedCase, setSelectedCase] = useState<any>(null);
 
-  const availableCases = [
+  const [availableCases, setAvailableCases] = useState([
     {
       id: 'EDU004',
       title: 'Educational Access Discrimination',
@@ -22,7 +22,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       complainant: 'Parent Teachers Association',
       respondent: 'Ghana Education Service',
       dateSubmitted: '8/12/2024',
-      status: 'pending',
       documents: [
         'Admission_Denial_Letter.pdf',
         'Student_Application_Form.pdf',
@@ -31,7 +30,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       ],
       additionalDetails: {
         location: 'Accra Senior High School, Greater Accra Region',
-        incidentDate: '15/11/2024',
       }
     },
     {
@@ -41,14 +39,12 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       complainant: 'Ms. Jane Doe',
       respondent: 'ABC Corporation Ltd',
       dateSubmitted: '10/12/2024',
-      status: 'pending',
       documents: [
         'Employment_Records.pdf',
         'Performance_Reviews.pdf'
       ],
       additionalDetails: {
         location: 'Kumasi, Ashanti Region',
-        incidentDate: '05/10/2024',
       }
     },
     {
@@ -58,7 +54,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       complainant: 'Civil Society Organization',
       respondent: 'Ministry of Local Government',
       dateSubmitted: '12/12/2024',
-      status: 'pending',
       documents: [
         'Procurement_Documents.pdf',
         'Audit_Report.pdf',
@@ -66,25 +61,34 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
       ],
       additionalDetails: {
         location: 'Tamale, Northern Region',
-        incidentDate: '20/09/2024',
       }
     }
-  ];
+  ]);
 
   const handleCaseClick = (caseData: any) => {
     setSelectedCase(caseData);
     setCurrentView('details');
   };
 
-  const handleAcceptCase = (notes: string) => {
-    console.log('Case accepted with notes:', notes);
-    alert('Case has been accepted and assigned to your caseload!');
-  };
+  async function getUnassignedCases(){
+    const myHeaders = new Headers();
 
-  const handleRejectCase = (notes: string, reason: string) => {
-    console.log('Case rejected with notes:', notes, 'Reason:', reason);
-    alert('Case has been marked as outside CHRAJ mandate and will be closed.');
-  };
+    var token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    var req = await fetch("http://127.0.0.1:8000/complaints/unassigned-cases", {
+      headers: myHeaders,
+    })
+
+    var response = await req.json();
+
+    setAvailableCases(response["all_complaints"])
+  }
+
+  useEffect(()=>{
+    getUnassignedCases()
+  }, [])
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col">
@@ -136,8 +140,6 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
         <CaseDetailsPage
           caseData={selectedCase}
           onBack={() => setCurrentView('list')}
-          onAcceptCase={handleAcceptCase}
-          onRejectCase={handleRejectCase}
           isDarkMode={isDarkMode}
         />
       )}

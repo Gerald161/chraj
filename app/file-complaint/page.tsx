@@ -82,7 +82,6 @@ export default function FileComplaint() {
 
     const handleSubmit = async() => {
         if(isSaved){
-            console.log("have to start a new session")
             return;
         }
 
