@@ -122,7 +122,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
   };
 
   const handleAdvance = () => {
-    onAdvance('MEDIATION');
+    onAdvance('mediation');
   };
 
   const isRespondentSelected = newHearing.attendees.includes('Respondent');
@@ -239,7 +239,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
             </div>
 
             <div>
-              <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mb-2`}>Purpose (Optional)</label>
+              <label className={`block ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mb-2`}>Purpose</label>
               <input
                 type="text"
                 value={newHearing.purpose}
@@ -384,20 +384,12 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
       </div>
 
       <div className="flex justify-end space-x-4">
-        <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
-          Save Draft
+        <button
+          onClick={handleAdvance}
+          className="px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Proceed to Mediation
         </button>
-        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          Send Invitations
-        </button>
-        {hearings.length > 0 && (
-          <button
-            onClick={handleAdvance}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Proceed to Mediation
-          </button>
-        )}
       </div>
     </div>
   );

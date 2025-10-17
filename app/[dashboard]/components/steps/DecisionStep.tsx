@@ -49,7 +49,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
   };
 
   const handleAdvance = () => {
-    onAdvance('RESOLVED');
+    onAdvance('resolved');
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Users, Gavel, CheckCircle, ChevronRight, Calendar } from 'lucide-react';
+import { Search, Users, Gavel, CheckCircle, ChevronRight, Calendar, ArrowLeft } from 'lucide-react';
 import { CaseData } from '../types/case';
 import { InvestigationStep } from './steps/InvestigationStep';
 import { HearingStep } from './steps/HearingStep';
@@ -18,47 +18,42 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
 
   const steps = [
     {
-      id: 'INVESTIGATION',
-      label: 'Investigation',
+      label: 'investigation',
       icon: Search,
       description: 'Conduct thorough investigation and collect evidence'
     },
     {
-      id: 'HEARING',
-      label: 'Hearing',
+      label: 'hearing',
       icon: Users,
       description: 'Schedule and conduct hearings with parties'
     },
     {
-      id: 'MEDIATION',
-      label: 'Mediation',
+      label: 'mediation',
       icon: Calendar,
       description: 'Schedule appointments and mediate between parties'
     },
     {
-      id: 'DECISION',
-      label: 'Decision',
+      label: 'decision',
       icon: Gavel,
       description: 'Make final decision and publish verdict'
     },
     {
-      id: 'RESOLVED',
-      label: 'Resolved',
+      label: 'resolved',
       icon: CheckCircle,
       description: 'Case concluded successfully'
     }
   ];
 
   const getCurrentStepIndex = () => {
-    return steps.findIndex(step => step.id === caseData.status);
+    return steps.findIndex(step => step.label === caseData.status);
   };
 
   const isStepCompleted = (stepIndex: number) => {
     return stepIndex < getCurrentStepIndex();
   };
 
-  const isStepActive = (stepId: string) => {
-    return stepId === caseData.status;
+  const isStepActive = (stepLabel: string) => {
+    return stepLabel === caseData.status;
   };
 
   const handleStepChange = (newStatus: CaseData['status']) => {
@@ -72,15 +67,15 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
 
   const renderStepContent = () => {
     switch (activeStep) {
-      case 'INVESTIGATION':
+      case 'investigation':
         return <InvestigationStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
-      case 'HEARING':
+      case 'hearing':
         return <HearingStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
-      case 'MEDIATION':
+      case 'mediation':
         return <MediationStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
-      case 'DECISION':
+      case 'decision':
         return <DecisionStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
-      case 'RESOLVED':
+      case 'resolved':
         return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
       default:
         return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
@@ -90,13 +85,21 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
   return (
     <div className="flex-1 overflow-y-auto">
       {/* Progress Steps */}
-      <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6`}>
+      <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-2 pt-6 pb-6`}>
         <div className="flex items-center justify-between">
+          <button
+            // onClick={onBack}
+            className={`flex items-center mr-3 transition-colors cursor-pointer ${
+              isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+            }`}
+          >
+            <ArrowLeft size={24} />
+          </button>
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
+            <div key={step.label} className="flex items-center">
               <div 
                 className={`flex items-center space-x-2 cursor-pointer p-3 rounded-lg transition-colors ${
-                  isStepActive(step.id) 
+                  isStepActive(step.label) 
                     ? 'bg-blue-600 text-white'
                     : isStepCompleted(index)
                     ? 'bg-green-600 text-white'
@@ -104,11 +107,11 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
                     ? 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                     : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                 }`}
-                onClick={() => setActiveStep(step.id as CaseData['status'])}
+                onClick={() => setActiveStep(step.label as CaseData['status'])}
               >
                 <step.icon className="w-5 h-5" />
                 <div>
-                  <div className="font-medium text-sm">{step.label}</div>
+                  <div className="font-medium text-sm capitalize">{step.label}</div>
                   <div className="text-xs opacity-75">{step.description}</div>
                 </div>
               </div>

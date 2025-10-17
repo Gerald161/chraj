@@ -73,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
               <button
                 onClick={() => setActiveSection(item.id)}
                 className={`w-full cursor-pointer flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                  activeSection === item.id
+                  (activeSection === item.id || (activeSection === 'case-detail' && item.id === 'my-cases'))
                     ? 'bg-blue-600 text-white'
                     : isDarkMode
                     ? 'text-slate-300 hover:bg-slate-800 hover:text-white'

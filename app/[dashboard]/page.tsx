@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
@@ -31,6 +31,26 @@ export default function DashboardPage() {
     setIsDarkMode(!isDarkMode);
   };
 
+  useEffect(()=>{
+    getMyCases()
+  }, [])
+
+  async function getMyCases(){
+    const myHeaders = new Headers();
+
+    var token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    var req = await fetch("http://127.0.0.1:8000/complaints/my-cases", {
+      headers: myHeaders,
+    })
+
+    var response = await req.json();
+
+    setCases(response["all_complaints"])
+  }
+
   const getPageTitle = () => {
     switch (activeSection) {
       case 'available-cases':
@@ -59,7 +79,6 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col">
         <Navbar 
           title={getPageTitle()}
-          subtitle="Welcome back, John"
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
         />

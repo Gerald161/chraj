@@ -21,7 +21,7 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
   };
 
   const handleAdvance = () => {
-    onAdvance('HEARING');
+    onAdvance('hearing');
   };
 
   const handleDeleteClick = (index: number) => {
@@ -115,10 +115,6 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
       </div>
 
       <div className="flex justify-end space-x-4">
-        <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
-          Save Investigation
-        </button>
-
         <button
           onClick={handleAdvance}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

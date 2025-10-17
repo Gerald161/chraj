@@ -95,20 +95,26 @@ export const CaseListItem: React.FC<CaseListItemProps> = ({
         )}
       </div>
 
-      {!showAcceptButton && (
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Progress</span>
-            <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{caseData.status == "hearing" ? "20" : "50"}%</span>
+      {!showAcceptButton && (() => {
+        const steps = ['investigation', 'hearing', 'mediation', 'decision', 'resolved'];
+        const currentIndex = steps.indexOf(caseData.status);
+        const progress = currentIndex !== -1 ? ((currentIndex + 1) / steps.length * 100) : 0;
+        
+        return (
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Progress</span>
+              <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{progress.toFixed(0)}%</span>
+            </div>
+            <div className={`w-full rounded-full h-2 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
+              <div
+                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
-          <div className={`w-full rounded-full h-2 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
-            <div
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${caseData.status == "hearing" ? "20" : "50"}%` }}
-            />
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
