@@ -10,10 +10,11 @@ import { ResolvedStep } from './steps/ResolvedStep';
 interface CaseDetailProps {
   caseData: CaseData;
   onUpdateCase: (updatedCase: CaseData) => void;
+  onBack: () => void;
   isDarkMode: boolean;
 }
 
-export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, isDarkMode }) => {
+export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpdateCase, isDarkMode }) => {
   const [activeStep, setActiveStep] = useState(caseData.status);
 
   const steps = [
@@ -88,7 +89,7 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onUpdateCase, 
       <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-2 pt-6 pb-6`}>
         <div className="flex items-center justify-between">
           <button
-            // onClick={onBack}
+            onClick={onBack}
             className={`flex items-center mr-3 transition-colors cursor-pointer ${
               isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
             }`}

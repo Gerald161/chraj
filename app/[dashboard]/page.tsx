@@ -114,6 +114,7 @@ export default function DashboardPage() {
             caseData={selectedCase}
             onUpdateCase={handleCaseUpdate}
             isDarkMode={isDarkMode}
+            onBack={()=>{setActiveSection("my-cases")}}
           />
         )}
       </div>

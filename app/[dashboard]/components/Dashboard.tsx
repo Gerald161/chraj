@@ -14,17 +14,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ cases, onCaseSelect, isDar
   const [statusFilter, setStatusFilter] = useState('All Status');
 
   const filteredCases = cases.filter(caseItem => {
-  const matchesSearch = caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        caseItem.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          caseItem.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'All Status';
+    const matchesStatus = statusFilter === 'All Status' || caseItem.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
 
   const statusOptions = [
     'All Status',
-    'intial',
     'investigation',
     'hearing',
     'mediation',
@@ -40,14 +39,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ cases, onCaseSelect, isDar
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className={`rounded-lg px-4 py-2 border transition-colors ${
+            className={`rounded-lg px-4 capitalize py-2 border transition-colors ${
               isDarkMode 
                 ? 'bg-slate-800 text-white border-slate-600' 
                 : 'bg-white text-gray-900 border-gray-300'
             }`}
           >
             {statusOptions.map((option) => (
-              <option key={option} value={option}>
+              <option key={option} value={option} className='capitalize'>
                 {option === 'All Status' ? option : option.replace('_', ' ')}
               </option>
             ))}
