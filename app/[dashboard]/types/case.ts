@@ -3,6 +3,7 @@ export interface CaseData {
   title: string;
   description: string;
   complainant: string;
+  investigation_notes: string;
   respondent: string;
   dateSubmitted: string;
   status: string;
@@ -10,4 +11,5 @@ export interface CaseData {
   additionalDetails?: {
     location?: string;
   };
+  docRequests: string[];
 };

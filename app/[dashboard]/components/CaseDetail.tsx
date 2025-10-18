@@ -64,6 +64,7 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
       lastUpdated: new Date().toISOString().split('T')[0],
     };
     onUpdateCase(updatedCase);
+    setActiveStep(newStatus);
   };
 
   const renderStepContent = () => {
