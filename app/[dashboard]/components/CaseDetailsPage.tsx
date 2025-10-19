@@ -1,5 +1,6 @@
 import { ArrowLeft, Calendar, FileText, User, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { Hearing } from '../types/case';
 
 interface CaseDetailsPageProps {
   caseData: {
@@ -16,6 +17,8 @@ interface CaseDetailsPageProps {
     additionalDetails?: {
       location?: string;
     };
+    docRequests: string[];
+    hearing: Hearing[];
   };
   onBack: () => void;
   isDarkMode: boolean;

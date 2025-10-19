@@ -1,3 +1,16 @@
+export interface Hearing{
+  id: string;
+  date: string;
+  time: string;
+  venue: string;
+  attendees: string[];
+  purpose: string;
+  itemsForRespondent?: string[];
+  itemsForComplainant?: string[];
+  respondent_attending?: null | boolean;
+  complainant_attending?: null | boolean;
+}
+
 export interface CaseData {
   id: string;
   title: string;
@@ -12,4 +25,5 @@ export interface CaseData {
     location?: string;
   };
   docRequests: string[];
+  hearings: Hearing[];
 };

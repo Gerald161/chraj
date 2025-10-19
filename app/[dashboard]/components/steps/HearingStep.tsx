@@ -1,21 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, MapPin, Plus, Trash2, Users, Package, AlertCircle, CheckCircle } from 'lucide-react';
-
-interface Hearing {
-  id: string;
-  date: string;
-  time: string;
-  venue: string;
-  attendees: string[];
-  purpose: string;
-  itemsForRespondent?: string[];
-  itemsForComplainant?: string[];
-}
-
-interface CaseData {
-  id: string;
-  status: string;
-}
+import { Hearing, CaseData } from '../../types/case';
 
 interface HearingStepProps {
   caseData: CaseData;
@@ -25,6 +10,7 @@ interface HearingStepProps {
 
 export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, isDarkMode }) => {
   const [hearings, setHearings] = useState<Hearing[]>([]);
+
   const [newHearing, setNewHearing] = useState({
     date: '',
     time: '',
@@ -51,7 +37,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
   // Check if hearing exists for specific attendee
   const hasComplainantHearing = hearings.some(h => h.attendees.includes('Complainant'));
   const hasRespondentHearing = hearings.some(h => h.attendees.includes('Respondent'));
-  const bothHearingsScheduled = hasComplainantHearing && hasRespondentHearing;
+  const bothHearingsScheduled = hearings.length == 2;
 
   const addHearing = () => {
     // Check if there are unsaved items
@@ -228,6 +214,13 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
     }
   }
 
+  useEffect(()=>{
+    if(caseData.hearings.length !== 0){
+      setSavedState(true);
+      setHearings(caseData.hearings);
+    }
+  }, [])
+
   const isRespondentSelected = newHearing.attendees.includes('Respondent');
   const isComplainantSelected = newHearing.attendees.includes('Complainant');
 
@@ -269,14 +262,26 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                         {hearing.venue}
                       </div>
                     </div>
-                    <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm`}>
+                    <div className={`capitalize ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm`}>
                       <strong>Attendee:</strong> {hearing.attendees.join(', ') || 'None specified'}
                     </div>
                     {hearing.purpose && (
-                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm`}>
+                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mt-2 mb-2`}>
                         <strong>Purpose:</strong> {hearing.purpose}
                       </div>
                     )}
+                    {hearing.attendees[0] == "respondent" && (
+                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mt-2 mb-2`}>
+                        <strong>Respondent Attending:</strong> {hearing.respondent_attending ? "Yes" : "No"} 
+                      </div>
+                    )}
+
+                    {hearing.attendees[0] == "complainant" && (
+                      <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mt-2 mb-2`}>
+                        <strong>Complainant Attending:</strong> {hearing.complainant_attending? "Yes" : "No"} 
+                      </div>
+                    )}
+
                     {hearing.itemsForRespondent && hearing.itemsForRespondent.length > 0 && (
                       <div className={`${isDarkMode ? 'text-slate-300' : 'text-gray-700'} text-sm mt-2`}>
                         <strong>Items for Respondent:</strong> {hearing.itemsForRespondent.join(', ')}
@@ -288,12 +293,15 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                       </div>
                     )}
                   </div>
-                  <button
-                    onClick={() => removeHearing(hearing.id)}
-                    className="cursor-pointer text-red-400 hover:text-red-300 ml-4"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {
+                    !savedState && 
+                    <button
+                      onClick={() => removeHearing(hearing.id)}
+                      className="cursor-pointer text-red-400 hover:text-red-300 ml-4"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  }
                 </div>
               ))}
             </div>
@@ -307,7 +315,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
             <div>
               <p className="font-medium">All Hearings Scheduled</p>
               <p className="text-sm mt-1">
-                Hearings have been scheduled for both the Complainant and Respondent. You can proceed to the next step or delete a hearing to reschedule.
+                Hearings have been scheduled for both the Complainant and Respondent.
               </p>
             </div>
           </div>
