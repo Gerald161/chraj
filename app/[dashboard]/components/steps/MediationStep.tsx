@@ -20,8 +20,8 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
   const [scheduledHearing, setScheduledHearing] = useState<MediationHearing | null>(null);
 
   const handleAdvance = async () => {
-    if (!mediationDate || !mediationTime || !venue || !purpose) {
-      alert('Please fill in all fields before submitting');
+    if (!scheduledHearing) {
+      alert('Please add a mediation hearing before saving');
       return;
     }
 
@@ -35,10 +35,10 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
 
     const formdata = new FormData();
 
-    formdata.append("date", mediationDate);
-    formdata.append("time", mediationTime);
-    formdata.append("venue", venue);
-    formdata.append("purpose", purpose);
+    formdata.append("date", scheduledHearing.date);
+    formdata.append("time", scheduledHearing.time);
+    formdata.append("venue", scheduledHearing.venue);
+    formdata.append("purpose", scheduledHearing.purpose);
 
     var req = await fetch(`http://127.0.0.1:8000/complaints/mediation/${caseData.id}`, {
       method: "POST",
@@ -75,10 +75,11 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
       purpose: purpose
     });
 
+    // Clear form fields after adding
     setMediationDate('');
-      setMediationTime('');
-      setVenue('');
-      setPurpose('');
+    setMediationTime('');
+    setVenue('');
+    setPurpose('');
   }
 
   const completeStep = async (stepName: string) => {
@@ -130,7 +131,9 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
                   Mediation Hearing Scheduled Successfully
                 </h4>
                 <p className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-700'} mt-1`}>
-                  A hearing has been scheduled. You can delete it below to schedule a new one.
+                  {savedState 
+                    ? "Hearing has been saved to the system." 
+                    : "A hearing has been scheduled. Click 'Save' to persist to the system or delete to start over."}
                 </p>
               </div>
             </div>
@@ -150,9 +153,10 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
               !savedState &&
               <button
                 onClick={handleDelete}
-                className="space-x-2 px-4 cursor-pointer py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="flex items-center space-x-2 px-4 cursor-pointer py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
+                <span>Delete</span>
               </button>
             }
           </div>
@@ -161,6 +165,7 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
             <div className="flex items-start space-x-3">
               <Calendar className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} mt-0.5`} />
               <div>
+                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Date</p>
                 <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {scheduledHearing.date}
                 </p>
@@ -170,44 +175,64 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
             <div className="flex items-start space-x-3">
               <Clock className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} mt-0.5`} />
               <div>
+                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Time</p>
                 <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {scheduledHearing.time}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 md:col-span-2">
+            <div className="flex items-start space-x-3">
               <MapPin className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} mt-0.5`} />
               <div>
+                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Venue</p>
                 <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <strong className='text-sm'>Venue:</strong> {scheduledHearing.venue}
+                  {scheduledHearing.venue}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 md:col-span-2">
+            <div className="flex items-start space-x-3">
               <AlertCircle className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} mt-0.5`} />
               <div>
+                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>Purpose</p>
                 <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <strong className='text-sm'>Purpose:</strong> {scheduledHearing.purpose}
+                  {scheduledHearing.purpose}
                 </p>
               </div>
             </div>
 
             {
-              caseData.mediation.date !== "" &&
-              <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <strong className='text-sm'>Complainant Attending:</strong> {caseData.mediation.complainant_attending ? "Yes" : "No"}
-              </p>
-            }
+              caseData.mediation.date !== "" && (
+                <>
+                  <div className={`pt-4 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
+                    <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <strong className='text-sm'>Complainant Attending:</strong> {caseData.mediation.complainant_attending ? "Yes" : "No"}
+                    </p>
+                  </div>
 
-            {
-              caseData.mediation.date !== "" &&
-              <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <strong className='text-sm'>Respondent Attending:</strong> {caseData.mediation.respondent_attending ? "Yes" : "No"}
-              </p>
+                  <div>
+                    <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <strong className='text-sm'>Respondent Attending:</strong> {caseData.mediation.respondent_attending ? "Yes" : "No"}
+                    </p>
+                  </div>
+                </>
+              )
             }
           </div>
+
+          {/* Save Button - Only show when hearing is scheduled but not saved */}
+          {!savedState && (
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleAdvance}
+                disabled={saving}
+                className="px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? "Saving..." : "Save to System"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -285,33 +310,19 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
             </div>
           </div>
 
-          <div className="flex justify-end mt-6 gap-2">
-            {
-              scheduledHearing !== null && <button
-                onClick={handleAdvance}
-                disabled={!isFormValid}
-                className="px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {
-                saving ? "Saving" : "Save"
-                }
-              </button>
-            }
-
-            {
-              scheduledHearing == null && <button
-                onClick={addMediation}
-                disabled={!isFormValid}
-                className="px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Add Mediation
-              </button>
-            }
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={addMediation}
+              disabled={!isFormValid}
+              className="px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add Mediation
+            </button>
           </div>
         </div>
       )}
 
-      {/* Complete Step Button */}
+      {/* Complete Step Button - Only show when saved */}
       {savedState && (
         <div className="flex justify-end">
           <button
@@ -320,10 +331,10 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
                 completeStep("decision")
               }
             }}
-            className={`px-6 py-2 flex gap-0.5 items-center ${caseData.status == "mediation" ? "cursor-pointer" : "cursor-not-allowed"} bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors`}
+            className={`px-6 py-2 flex items-center ${caseData.status == "mediation" ? "cursor-pointer" : "cursor-not-allowed opacity-50"} bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors`}
           >
             <CheckCircle className="w-4 h-4 mr-2" />
-            Complete Hearing Step
+            Complete Mediation Step
           </button>
         </div>
       )}
