@@ -6,6 +6,7 @@ export const mockCases: CaseData[] = [
     title: 'Educational Access Discrimination',
     description: 'Complaint about discriminatory admission practices at public senior high school. The complainant alleges that their child was denied admission based on discriminatory criteria that violate constitutional rights to education. Multiple students from similar backgrounds have reported similar treatment, suggesting a pattern of systematic discrimination in the admission process.',
     complainant: 'Parent Teachers Association',
+    investigation_notes: "",
     respondent: 'Ghana Education Service',
     dateSubmitted: '8/12/2024',
     status: "investigation",
@@ -17,13 +18,15 @@ export const mockCases: CaseData[] = [
     ],
     additionalDetails: {
       location: 'Accra Senior High School, Greater Accra Region',
-    }
+    },
+    docRequests: []
   },
   {
     id: 'EMP012',
     title: 'Workplace Discrimination Case',
     description: 'Employee alleges discrimination based on gender in promotion decisions. The complainant has documented multiple instances where less qualified male colleagues received promotions over more qualified female employees.',
     complainant: 'Ms. Jane Doe',
+    investigation_notes: "",
     respondent: 'ABC Corporation Ltd',
     dateSubmitted: '10/12/2024',
     status: "hearing",
@@ -33,13 +36,15 @@ export const mockCases: CaseData[] = [
     ],
     additionalDetails: {
       location: 'Kumasi, Ashanti Region',
-    }
+    },
+    docRequests: []
   },
   {
     id: 'PUB007',
     title: 'Public Service Misconduct',
     description: 'Allegation of abuse of office and corruption by public officials in the procurement process. Documents suggest irregularities in contract awarding procedures.',
     complainant: 'Civil Society Organization',
+    investigation_notes: "",
     respondent: 'Ministry of Local Government',
     dateSubmitted: '12/12/2024',
     status: "hearing",
@@ -50,6 +55,7 @@ export const mockCases: CaseData[] = [
     ],
     additionalDetails: {
       location: 'Tamale, Northern Region',
-    }
+    },
+    docRequests: []
   }
 ];
