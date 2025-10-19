@@ -11,6 +11,15 @@ export interface Hearing{
   complainant_attending?: null | boolean;
 }
 
+export interface MediationHearing{
+  date: string;
+  time: string;
+  venue: string;
+  purpose: string;
+  respondent_attending?: null | boolean;
+  complainant_attending?: null | boolean;
+}
+
 export interface CaseData {
   id: string;
   title: string;
@@ -26,4 +35,5 @@ export interface CaseData {
   };
   docRequests: string[];
   hearings: Hearing[];
+  mediation: MediationHearing;
 };
