@@ -51,4 +51,8 @@ export interface Appointment {
   case_id: string;
   complainant: string;
   respondent: string;
+  status: string;
+  complainant_attending: boolean | null;
+  respondent_attending: boolean | null;
+  attendee: string;
 }

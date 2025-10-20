@@ -63,8 +63,6 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
     var response = await req.json();
 
     setAppointments(response["appointments"]);
-
-    console.log(response["appointments"]);
   }
 
   const getTypeColor = (type: string) => {

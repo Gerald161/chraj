@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ArrowLeft, Calendar, Clock, MapPin, User, FileText, Save } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Calendar, Clock, MapPin, User, FileText, Save, CheckCircle, X } from 'lucide-react';
 import { Appointment } from '../../types/case';
 
 interface AppointmentDetailsProps {
@@ -15,6 +15,8 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
 }) => {
   const [rescheduleDate, setRescheduleDate] = useState(appointment.date);
   const [rescheduleTime, setRescheduleTime] = useState(appointment.time);
+  const [showSaveButton, setShowSaveButton] = useState(true);
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
 
   const getTypeColor = (type: string) => {
     return type === 'hearing'
@@ -32,16 +34,49 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
     });
   };
 
-  const handleReschedule = () => {
+  const handleReschedule = async () => {
     if (rescheduleDate && rescheduleTime) {
-      console.log('Rescheduling appointment:', {
-        id: appointment.appointment_id,
-        newDate: rescheduleDate,
-        newTime: rescheduleTime
-      });
-      // Handle reschedule logic here
+      const myHeaders = new Headers();
+
+      var token = localStorage.getItem("token");
+
+      myHeaders.append("Authorization", `Token ${token}`);
+
+      const formdata = new FormData();
+
+      formdata.append("date", rescheduleDate);
+      formdata.append("time", rescheduleTime);
+
+      var req = await fetch(`http://127.0.0.1:8000/complaints/reschedule-appointment/${appointment.appointment_id}`, {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata
+      })
+
+      var response = await req.json();
+
+      if(response["status"] == "saved"){
+        appointment.date = rescheduleDate;
+        appointment.time = rescheduleTime;
+        
+        setShowSuccessCard(true);
+        
+        setTimeout(() => {
+          setShowSuccessCard(false);
+        }, 5000);
+      }
     }
   };
+
+  useEffect(()=>{
+    if(appointment.status == "resolved" || appointment.status == "decision"){
+      setShowSaveButton(false);
+    }
+
+    if(appointment.type == "hearing" && appointment.status == "mediation"){
+      setShowSaveButton(false);
+    }
+  }, [])
 
   const themeClasses = {
     container: isDarkMode 
@@ -136,83 +171,129 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
           {/* Parties Involved */}
           <div className={`rounded-lg border ${themeClasses.card} p-6`}>
             <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>
-              Parties Involved
+              { appointment.attendee == "both" ? "Parties Involved" : "Attendee"}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <User className={`w-4 h-4 ${themeClasses.textMuted}`} />
-                  <span className={`font-medium ${themeClasses.text}`}>Complainant</span>
+              {
+                (appointment.attendee == "both" || appointment.attendee == "complainant") &&
+                <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className={`w-4 h-4 ${themeClasses.textMuted}`} />
+                    <span className={`font-medium ${themeClasses.text}`}>Complainant</span>
+                  </div>
+                  <p className={`${themeClasses.textSecondary}`}>
+                    {appointment.complainant}
+                  </p>
                 </div>
-                <p className={`${themeClasses.textSecondary}`}>
-                  {appointment.complainant}
-                </p>
-              </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <User className={`w-4 h-4 ${themeClasses.textMuted}`} />
-                  <span className={`font-medium ${themeClasses.text}`}>Respondent</span>
+              }
+              {
+                (appointment.attendee == "both" || appointment.attendee == "respondent") &&
+                <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className={`w-4 h-4 ${themeClasses.textMuted}`} />
+                    <span className={`font-medium ${themeClasses.text}`}>Respondent</span>
+                  </div>
+                  <p className={`${themeClasses.textSecondary}`}>
+                    {appointment.respondent}
+                  </p>
                 </div>
-                <p className={`${themeClasses.textSecondary}`}>
-                  {appointment.respondent}
-                </p>
-              </div>
+              }
             </div>
           </div>
 
           {/* Reschedule Section */}
-          <div className={`rounded-lg border ${themeClasses.card} p-6`}>
-            <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>
-              Reschedule Appointment
-            </h3>
+          {showSaveButton && (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2`}>
-                    New Date
-                  </label>
-                  <input
-                    type="date"
-                    value={rescheduleDate}
-                    onChange={(e) => setRescheduleDate(e.target.value)}
-                    className={`w-full px-3 py-2 rounded-lg border ${themeClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors`}
-                    style={{
-                      colorScheme: isDarkMode ? 'dark' : 'light'
-                    }}
-                  />
+              {/* Success Card */}
+              {showSuccessCard && (
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                  <div className={`${
+                    isDarkMode 
+                      ? 'bg-green-900/90 border-green-700' 
+                      : 'bg-green-50 border-green-200'
+                  } border rounded-lg p-4 flex items-start gap-3`}>
+                    <CheckCircle className={`w-5 h-5 ${
+                      isDarkMode ? 'text-green-400' : 'text-green-600'
+                    } flex-shrink-0 mt-0.5`} />
+                    <div className="flex-1">
+                      <h4 className={`font-semibold ${
+                        isDarkMode ? 'text-green-200' : 'text-green-800'
+                      }`}>
+                        Appointment Rescheduled
+                      </h4>
+                      <p className={`text-sm ${
+                        isDarkMode ? 'text-green-300' : 'text-green-700'
+                      }`}>
+                        Your appointment has been successfully rescheduled to {formatDate(rescheduleDate)} at {rescheduleTime}.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowSuccessCard(false)}
+                      className={`${
+                        isDarkMode ? 'text-green-300 hover:text-green-100' : 'text-green-600 hover:text-green-800'
+                      } transition-colors cursor-pointer`}
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2`}>
-                    New Time
-                  </label>
-                  <input
-                    type="time"
-                    value={rescheduleTime}
-                    onChange={(e) => setRescheduleTime(e.target.value)}
-                    className={`w-full px-3 py-2 rounded-lg border ${themeClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors`}
-                    style={{
-                      colorScheme: isDarkMode ? 'dark' : 'light'
-                    }}
-                  />
+              )}
+
+              {/* Reschedule Form */}
+              <div className={`rounded-lg border ${themeClasses.card} p-6`}>
+                <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>
+                  Reschedule Appointment
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2`}>
+                        New Date
+                      </label>
+                      <input
+                        type="date"
+                        value={rescheduleDate}
+                        onChange={(e) => setRescheduleDate(e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border ${themeClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                        style={{
+                          colorScheme: isDarkMode ? 'dark' : 'light'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2`}>
+                        New Time
+                      </label>
+                      <input
+                        type="time"
+                        value={rescheduleTime}
+                        onChange={(e) => setRescheduleTime(e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg border ${themeClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                        style={{
+                          colorScheme: isDarkMode ? 'dark' : 'light'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={handleReschedule}
+                      className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={onBack}
+                      className={`px-4 cursor-pointer py-2 rounded-lg border transition-colors font-medium ${themeClasses.button}`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={handleReschedule}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  <Save className="w-4 h-4" />
-                  Save Changes
-                </button>
-                <button
-                  onClick={onBack}
-                  className={`px-4 py-2 rounded-lg border transition-colors font-medium ${themeClasses.button}`}
-                >
-                  Cancel
-                </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

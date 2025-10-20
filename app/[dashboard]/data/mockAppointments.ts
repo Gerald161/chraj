@@ -10,7 +10,11 @@ export const mockAppointments: Appointment[] = [
     venue: 'CHRAJ Regional Office, Hearing Room A',
     case_id: 'PMI/2024/0125',
     complainant: 'John Doe',
-    respondent: 'Ghana Police Service'
+    respondent: 'Ghana Police Service',
+    status: "hearing",
+    complainant_attending: null,
+    respondent_attending: null,
+    attendee: ""
   },
   {
     appointment_id: '2',
@@ -21,7 +25,11 @@ export const mockAppointments: Appointment[] = [
     venue: 'CHRAJ Regional Office, Mediation Room B',
     case_id: 'EDC/2024/0089',
     complainant: 'Mary Johnson',
-    respondent: 'XYZ Corporation'
+    respondent: 'XYZ Corporation',
+    status: "mediation",
+    complainant_attending: null,
+    respondent_attending: null,
+    attendee: ""
   },
   {
     appointment_id: '3',
@@ -32,7 +40,11 @@ export const mockAppointments: Appointment[] = [
     venue: 'CHRAJ Regional Office, Hearing Room C',
     case_id: 'LDR/2024/0045',
     complainant: 'Community Leaders',
-    respondent: 'Local Authority'
+    respondent: 'Local Authority',
+    status: "decision",
+    complainant_attending: null,
+    respondent_attending: null,
+    attendee: ""
   },
   {
     appointment_id: '4',
@@ -43,6 +55,10 @@ export const mockAppointments: Appointment[] = [
     venue: 'CHRAJ Regional Office, Mediation Room A',
     case_id: 'GSC/2024/0156',
     complainant: 'Citizens Group',
-    respondent: 'Municipal Assembly'
+    respondent: 'Municipal Assembly',
+    status: "decision",
+    complainant_attending: null,
+    respondent_attending: null,
+    attendee: ""
   }
 ];
