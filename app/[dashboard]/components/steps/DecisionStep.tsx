@@ -4,7 +4,7 @@ import { CaseData } from '../../types/case';
 
 interface DecisionStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status']) => void;
+  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
   isDarkMode: boolean;
 }
 
@@ -91,7 +91,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
           var res = await req.json();
 
           if(res["status"] =="saved"){
-            onAdvance('resolved');
+            onAdvance('resolved', caseData.id);
           }
 
           setSaving(false);
@@ -125,7 +125,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
           var res = await req.json();
 
           if(res["status"] =="saved"){
-            onAdvance('resolved');
+            onAdvance('resolved', caseData.id);
           }
 
           setSaving(false);

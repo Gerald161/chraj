@@ -9,7 +9,7 @@ import { ResolvedStep } from './steps/ResolvedStep';
 
 interface CaseDetailProps {
   caseData: CaseData;
-  onUpdateCase: (updatedCase: CaseData) => void;
+  onUpdateCase: (caseID: string) => void;
   onBack: () => void;
   isDarkMode: boolean;
 }
@@ -66,12 +66,8 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
     return stepLabel === caseData.status;
   };
 
-  const handleStepChange = (newStatus: CaseData['status']) => {
-    const updatedCase = { 
-      ...caseData, 
-      status: newStatus,
-    };
-    onUpdateCase(updatedCase);
+  const handleStepChange = (newStatus: CaseData['status'], caseID: string) => {
+    onUpdateCase(caseID);
     setActiveStep(newStatus);
   };
 

@@ -4,7 +4,7 @@ import { Hearing, CaseData } from '../../types/case';
 
 interface HearingStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: string) => void;
+  onAdvance: (newStatus: string, caseID: string) => void;
   isDarkMode: boolean;
 }
 
@@ -210,7 +210,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('mediation');
+      onAdvance('mediation', caseData.id);
     }
   }
 

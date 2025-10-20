@@ -4,7 +4,7 @@ import { CaseData } from '../../types/case';
 
 interface InvestigationStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status']) => void;
+  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
   isDarkMode: boolean;
 }
 
@@ -81,7 +81,7 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('hearing');
+      onAdvance('hearing', caseData.id);
     }
   }
 

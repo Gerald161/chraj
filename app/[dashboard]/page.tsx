@@ -22,12 +22,10 @@ export default function DashboardPage() {
     setActiveSection('case-detail');
   };
 
-  const handleCaseUpdate = (updatedCase: CaseData) => {
-    setCases(cases.map(c => c.id === updatedCase.id ? updatedCase : c));
+  const handleCaseUpdate = (caseID: string) => {
+    getMyCases();
 
-    console.log(updatedCase)
-
-    setSelectedCase(updatedCase);
+    setSelectedCase(cases?.find(caseItem => caseItem.id === caseID) ?? null);
   };
 
   const handleToggleTheme = () => {

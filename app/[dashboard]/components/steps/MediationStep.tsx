@@ -4,7 +4,7 @@ import { CaseData, MediationHearing } from '../../types/case';
 
 interface MediationStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status']) => void;
+  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
   isDarkMode: boolean;
 }
 
@@ -99,7 +99,7 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('decision');
+      onAdvance('decision', caseData.id);
     }
   }
 
