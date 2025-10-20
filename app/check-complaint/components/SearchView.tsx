@@ -71,20 +71,20 @@ export const SearchView: React.FC<SearchViewProps> = ({
           }`}>
             <div className="text-center mb-8">
               <h2 className="text-2xl font-semibold mb-3">Track Your Case</h2>
-              <p className="opacity-75">Enter your case ID to view current status and available actions</p>
+              <p className="opacity-75">Enter your Reference ID to view current status and available actions</p>
             </div>
 
             <div className="space-y-6">
               <div>
                 <label htmlFor="caseId" className="block text-sm font-medium mb-3">
-                  Case ID
+                  Reference ID
                 </label>
                 <input
                   type="text"
                   id="caseId"
                   value={caseId}
                   onChange={(e) => onCaseIdChange(e.target.value)}
-                  placeholder="Enter Case ID (e.g., CHR001)"
+                  placeholder="Enter Reference ID (e.g., COMPL001)"
                   className={`w-full px-4 py-4 rounded-lg border transition-all duration-200 text-lg ${
                     theme === 'dark'
                       ? 'bg-gray-700 border-gray-600 focus:border-blue-500 focus:bg-gray-600'
@@ -97,7 +97,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
               <button
                 onClick={onSearch}
                 disabled={!caseId.trim() || loading}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? (
                   <div className="flex items-center">

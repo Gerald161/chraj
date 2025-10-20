@@ -117,10 +117,11 @@ export default function CheckComplaint() {
         
         setLoading(true);
         // Simulate API call
+        
         setTimeout(() => {
-        setCaseData(mockCaseData);
-        setCurrentView('dashboard');
-        setLoading(false);
+            setCaseData(mockCaseData);
+            setCurrentView('dashboard');
+            setLoading(false);
         }, 1000);
     };
 
@@ -168,12 +169,12 @@ export default function CheckComplaint() {
         return (
         <div className={theme === 'dark' ? 'dark' : ''}>
             <SearchView
-            theme={theme}
-            caseId={caseId}
-            loading={loading}
-            onThemeToggle={toggleTheme}
-            onCaseIdChange={setCaseId}
-            onSearch={handleSearch}
+                theme={theme}
+                caseId={caseId}
+                loading={loading}
+                onThemeToggle={toggleTheme}
+                onCaseIdChange={setCaseId}
+                onSearch={handleSearch}
             />
         </div>
         );
@@ -181,32 +182,32 @@ export default function CheckComplaint() {
 
     return (
         <div className={theme === 'dark' ? 'dark' : ''}>
-        <div className={`min-h-screen transition-colors duration-300 ${
-            theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
-        }`}>
-            <DashboardHeader
-            theme={theme}
-            caseData={caseData!}
-            onBackToSearch={handleBackToSearch}
-            onThemeToggle={toggleTheme}
-            />
+            <div className={`min-h-screen transition-colors duration-300 ${
+                theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+            }`}>
+                <DashboardHeader
+                    theme={theme}
+                    caseData={caseData!}
+                    onBackToSearch={handleBackToSearch}
+                    onThemeToggle={toggleTheme}
+                />
 
-            <div className="flex min-h-[calc(100vh-80px)]">
-            <ProgressSidebar
-                theme={theme}
-                steps={caseData!.steps}
-                selectedStep={caseData!.selectedStep}
-                onStepClick={handleStepClick}
-            />
+                <div className="flex min-h-[calc(100vh-80px)]">
+                    <ProgressSidebar
+                        theme={theme}
+                        steps={caseData!.steps}
+                        selectedStep={caseData!.selectedStep}
+                        onStepClick={handleStepClick}
+                    />
 
-            {/* Main Content Area */}
-            <div className="flex-1">
-                <div className="p-8">
-                {renderStepContent()}
+                    {/* Main Content Area */}
+                    <div className="flex-1">
+                        <div className="p-8">
+                        {renderStepContent()}
+                        </div>
+                    </div>
                 </div>
             </div>
-            </div>
-        </div>
         </div>
     );
 }
