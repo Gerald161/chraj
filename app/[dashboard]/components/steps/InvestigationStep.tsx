@@ -4,7 +4,7 @@ import { CaseData } from '../../types/case';
 
 interface InvestigationStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
+  onAdvance: (newStatus: CaseData['status']) => void;
   isDarkMode: boolean;
 }
 
@@ -81,7 +81,7 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('hearing', caseData.id);
+      onAdvance('hearing');
     }
   }
 
@@ -206,7 +206,7 @@ export const InvestigationStep: React.FC<InvestigationStepProps> = ({ caseData, 
                   completeStep("hearing")
                 }
               }}
-            className={`px-6 py-2 flex gap-0.5 items-center ${caseData.status == "investigation" ? "cursor-pointer" : "cursor-not-allowed"} bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors`}
+            className={`px-6 py-2 flex gap-0.5 items-center ${caseData.status == "investigation" ? "cursor-pointer" : "cursor-not-allowed opacity-50"} bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors`}
           >
             <CheckCircle className="w-4 h-4 mr-2" />
             Complete Investigation

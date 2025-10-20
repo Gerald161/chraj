@@ -4,7 +4,7 @@ import { CaseData, MediationHearing } from '../../types/case';
 
 interface MediationStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
+  onAdvance: (newStatus: CaseData['status']) => void;
   isDarkMode: boolean;
 }
 
@@ -99,7 +99,7 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('decision', caseData.id);
+      onAdvance('decision');
     }
   }
 
@@ -156,7 +156,7 @@ export const MediationStep: React.FC<MediationStepProps> = ({ caseData, onAdvanc
                 className="flex items-center space-x-2 px-4 cursor-pointer py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
-                <span>Delete</span>
+                {/* <span>Delete</span> */}
               </button>
             }
           </div>

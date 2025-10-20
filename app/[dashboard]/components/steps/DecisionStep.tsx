@@ -4,7 +4,7 @@ import { CaseData } from '../../types/case';
 
 interface DecisionStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: CaseData['status'], caseID: string) => void;
+  onAdvance: (newStatus: CaseData['status']) => void;
   isDarkMode: boolean;
 }
 
@@ -91,7 +91,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
           var res = await req.json();
 
           if(res["status"] =="saved"){
-            onAdvance('resolved', caseData.id);
+            onAdvance('resolved');
           }
 
           setSaving(false);
@@ -125,7 +125,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
           var res = await req.json();
 
           if(res["status"] =="saved"){
-            onAdvance('resolved', caseData.id);
+            onAdvance('resolved');
           }
 
           setSaving(false);
@@ -334,7 +334,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
         <div className="flex justify-end space-x-4">
           <button
             onClick={handleAdvance}
-            className={`px-6 py-2 bg-green-600  ${caseData.status == "decision" ? "cursor-pointer" : "cursor-not-allowed"} text-white rounded-lg hover:bg-green-700 transition-colors flex items-center`}
+            className={`px-6 py-2 bg-green-600  ${caseData.status == "decision" ? "cursor-pointer" : "cursor-not-allowed opacity-50"} text-white rounded-lg hover:bg-green-700 transition-colors flex items-center`}
           >
             {
               saving ? "Saving" : (<><CheckCircle className="w-4 h-4 mr-2" />Mark as Resolved</>)

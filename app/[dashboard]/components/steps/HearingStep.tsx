@@ -4,7 +4,7 @@ import { Hearing, CaseData } from '../../types/case';
 
 interface HearingStepProps {
   caseData: CaseData;
-  onAdvance: (newStatus: string, caseID: string) => void;
+  onAdvance: (newStatus: string) => void;
   isDarkMode: boolean;
 }
 
@@ -210,7 +210,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
     var res = await req.json();
 
     if(res["status"] == "saved"){
-      onAdvance('mediation', caseData.id);
+      onAdvance('mediation');
     }
   }
 
@@ -564,7 +564,7 @@ export const HearingStep: React.FC<HearingStepProps> = ({ caseData, onAdvance, i
                 completeStep("mediation")
               }
             }}
-          className={`px-6 py-2 flex gap-0.5 items-center ${caseData.status == "hearing" ? "cursor-pointer" : "cursor-not-allowed"} bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors`}
+          className={`px-6 py-2 flex gap-0.5 items-center ${caseData.status == "hearing" ? "cursor-pointer" : "cursor-not-allowed opacity-50"} bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors`}
         >
           <CheckCircle className="w-4 h-4 mr-2" />
           Complete Hearing Step

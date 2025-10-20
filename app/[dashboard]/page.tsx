@@ -22,10 +22,9 @@ export default function DashboardPage() {
     setActiveSection('case-detail');
   };
 
-  const handleCaseUpdate = (caseID: string) => {
-    getMyCases();
-
-    setSelectedCase(cases?.find(caseItem => caseItem.id === caseID) ?? null);
+  const handleCaseUpdate = (updatedCase: CaseData) => {
+    setCases(cases.map(c => c.id === updatedCase.id ? updatedCase : c));
+    setSelectedCase(updatedCase);
   };
 
   const handleToggleTheme = () => {
@@ -115,7 +114,10 @@ export default function DashboardPage() {
             caseData={selectedCase}
             onUpdateCase={handleCaseUpdate}
             isDarkMode={isDarkMode}
-            onBack={()=>{setActiveSection("my-cases")}}
+            onBack={()=>{
+              getMyCases();
+              setActiveSection("my-cases")
+            }}
           />
         )}
       </div>

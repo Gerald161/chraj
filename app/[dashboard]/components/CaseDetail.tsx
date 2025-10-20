@@ -9,7 +9,7 @@ import { ResolvedStep } from './steps/ResolvedStep';
 
 interface CaseDetailProps {
   caseData: CaseData;
-  onUpdateCase: (caseID: string) => void;
+  onUpdateCase: (updatedCase: CaseData) => void;
   onBack: () => void;
   isDarkMode: boolean;
 }
@@ -54,6 +54,7 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
     // If case is resolved, all steps including resolved are completed
     if (caseData.status === 'resolved') {
       return true;
+
     }
     return stepIndex < currentIndex;
   };
@@ -66,8 +67,12 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
     return stepLabel === caseData.status;
   };
 
-  const handleStepChange = (newStatus: CaseData['status'], caseID: string) => {
-    onUpdateCase(caseID);
+  const handleStepChange = (newStatus: CaseData['status']) => {
+    const updatedCase = { 
+      ...caseData, 
+      status: newStatus,
+    };
+    onUpdateCase(updatedCase);
     setActiveStep(newStatus);
   };
 
