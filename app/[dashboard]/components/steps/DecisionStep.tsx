@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Handshake, CheckCircle, AlertCircle, Trash2, Edit2, Save } from 'lucide-react';
 import { CaseData } from '../../types/case';
 
@@ -18,6 +18,8 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
   const [errorMessage, setErrorMessage] = useState("");
 
   const [saving, setSaving] = useState(false);
+
+  const [saved, setSaved] = useState(false);
 
   const addTerm = () => {
     // Only add a new term if the last one is saved
@@ -135,6 +137,21 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
     }
   };
 
+  useEffect(()=>{
+    if(caseData.status == "resolved" && caseData.resolved_positively !== null){
+      setSaved(true);
+      if(caseData.resolved_positively){
+        setAgreedTerms(caseData.terms);
+        setMediationSuccess(true);
+      }else{
+        setMediationSuccess(false);
+      }
+      setOfficerNotes(caseData.final_notes!);
+    }else{
+      console.log("A decision has not been made")
+    }
+  }, [])
+
   return (
     <div className="space-y-6">
       {/* Mediation Outcome Summary */}
@@ -148,8 +165,12 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
 
         <div className="space-y-3">
           <button
-            onClick={() => setMediationSuccess(true)}
-            className={`w-full p-4 cursor-pointer rounded-lg border-2 transition-all flex items-center ${
+            onClick={() =>{
+              if(!saved){
+                setMediationSuccess(true)
+              }
+            }}
+            className={`w-full p-4 ${!saved ? "cursor-pointer" : "cursor-not-allowed"} rounded-lg border-2 transition-all flex items-center ${
               mediationSuccess === true
                 ? 'border-green-500 bg-green-500/10'
                 : isDarkMode
@@ -176,8 +197,12 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
           </button>
 
           <button
-            onClick={() => setMediationSuccess(false)}
-            className={`w-full cursor-pointer p-4 rounded-lg border-2 transition-all flex items-center ${
+            onClick={() => {
+              if(!saved){
+                setMediationSuccess(false)
+              }
+            }}
+            className={`w-full ${!saved ? "cursor-pointer" : "cursor-not-allowed"} p-4 rounded-lg border-2 transition-all flex items-center ${
               mediationSuccess === false
                 ? 'border-red-500 bg-red-500/10'
                 : isDarkMode
@@ -219,6 +244,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
                   {editingTermIndex === index || !savedTerms[index] ? (
                     <textarea
                       value={term}
+                      disabled={saved}
                       onChange={(e) => updateTerm(index, e.target.value)}
                       className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       rows={2}
@@ -231,31 +257,34 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
                     </p>
                   )}
                 </div>
-                <div className="flex gap-2">
-                  {editingTermIndex === index || !savedTerms[index] ? (
-                    <button
-                      onClick={() => saveTerm(index)}
-                      className={`p-2 ${isDarkMode ? 'bg-green-900 hover:bg-green-800' : 'bg-green-100 hover:bg-green-200'} ${isDarkMode ? 'text-green-200' : 'text-green-700'} rounded-lg transition-colors flex items-center justify-center`}
-                    >
-                      <Save className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => startEditingTerm(index)}
-                      className={`p-2 ${isDarkMode ? 'bg-blue-900 hover:bg-blue-800' : 'bg-blue-100 hover:bg-blue-200'} ${isDarkMode ? 'text-blue-200' : 'text-blue-700'} rounded-lg transition-colors flex items-center justify-center`}
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                  )}
-                  {agreedTerms.length > 1 && (
-                    <button
-                      onClick={() => removeTerm(index)}
-                      className={`p-2 ${isDarkMode ? 'bg-red-900 hover:bg-red-800' : 'bg-red-100 hover:bg-red-200'} ${isDarkMode ? 'text-red-200' : 'text-red-700'} rounded-lg transition-colors flex items-center justify-center`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
+                {
+                  !saved &&
+                  <div className="flex gap-2">
+                    {editingTermIndex === index || !savedTerms[index] ? (
+                      <button
+                        onClick={() => saveTerm(index)}
+                        className={`p-2 ${isDarkMode ? 'bg-green-900 hover:bg-green-800' : 'bg-green-100 hover:bg-green-200'} ${isDarkMode ? 'text-green-200' : 'text-green-700'} rounded-lg transition-colors flex items-center justify-center`}
+                      >
+                        <Save className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => startEditingTerm(index)}
+                        className={`p-2 ${isDarkMode ? 'bg-blue-900 hover:bg-blue-800' : 'bg-blue-100 hover:bg-blue-200'} ${isDarkMode ? 'text-blue-200' : 'text-blue-700'} rounded-lg transition-colors flex items-center justify-center`}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    {agreedTerms.length > 1 && (
+                      <button
+                        onClick={() => removeTerm(index)}
+                        className={`p-2 ${isDarkMode ? 'bg-red-900 hover:bg-red-800' : 'bg-red-100 hover:bg-red-200'} ${isDarkMode ? 'text-red-200' : 'text-red-700'} rounded-lg transition-colors flex items-center justify-center`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                }
               </div>
             ))}
 
@@ -287,6 +316,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
 
           <textarea
             value={officerNotes}
+            disabled={saved}
             onChange={(e) => setOfficerNotes(e.target.value)}
             className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
             rows={3}

@@ -36,4 +36,7 @@ export interface CaseData {
   docRequests: string[];
   hearings: Hearing[];
   mediation: MediationHearing;
+  terms: string[];
+  resolved_positively?: null | boolean;
+  final_notes?: string | null;
 };
