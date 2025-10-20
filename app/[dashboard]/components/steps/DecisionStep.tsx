@@ -13,11 +13,15 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
   const [agreedTerms, setAgreedTerms] = useState<string[]>(['']);
   const [savedTerms, setSavedTerms] = useState<boolean[]>([false]);
   const [editingTermIndex, setEditingTermIndex] = useState<number | null>(null);
-  const [failureReason, setFailureReason] = useState('');
   const [officerNotes, setOfficerNotes] = useState('');
 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [saving, setSaving] = useState(false);
+
   const addTerm = () => {
-    if (agreedTerms[agreedTerms.length - 1].trim() !== '') {
+    // Only add a new term if the last one is saved
+    if (savedTerms[savedTerms.length - 1]) {
       setAgreedTerms([...agreedTerms, '']);
       setSavedTerms([...savedTerms, false]);
     }
@@ -45,11 +49,90 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
   const removeTerm = (index: number) => {
     if (agreedTerms.length > 1) {
       setAgreedTerms(agreedTerms.filter((_, i) => i !== index));
+      setSavedTerms(savedTerms.filter((_, i) => i !== index));
     }
   };
 
-  const handleAdvance = () => {
-    onAdvance('resolved');
+  const handleAdvance = async () => {
+    if(caseData.status == "decision"){
+      // Get only the saved terms
+      const onlySavedTerms = agreedTerms.filter((_, index) => savedTerms[index]);
+      
+      if(mediationSuccess){
+        if(onlySavedTerms.length > 0 && officerNotes.trim().length !== 0){
+          setSaving(true);
+
+          setErrorMessage("");
+
+          const myHeaders = new Headers();
+
+          var token = localStorage.getItem("token");
+
+          myHeaders.append("Authorization", `Token ${token}`);
+
+          const formdata = new FormData();
+
+          formdata.append("resolved_positively", "True");
+
+          formdata.append("final_officer_notes", officerNotes);
+
+          onlySavedTerms.forEach((savedTerm)=>{
+            formdata.append(savedTerm, savedTerm)
+          })
+
+          var req = await fetch(`http://127.0.0.1:8000/complaints/decision/${caseData.id}`, {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata
+          })
+
+          var res = await req.json();
+
+          if(res["status"] =="saved"){
+            onAdvance('resolved');
+          }
+
+          setSaving(false);
+        } else {
+          setErrorMessage("Please enter your final notes and also at least one term that was agreed upon at the mediation, remember to save term before.");
+        }
+      }else{
+        if(officerNotes.trim().length !== 0){
+          setSaving(true);
+
+          setErrorMessage("");
+
+          const myHeaders = new Headers();
+
+          var token = localStorage.getItem("token");
+
+          myHeaders.append("Authorization", `Token ${token}`);
+
+          const formdata = new FormData();
+
+          formdata.append("resolved_positively", "False");
+
+          formdata.append("final_officer_notes", officerNotes);
+
+          var req = await fetch(`http://127.0.0.1:8000/complaints/decision/${caseData.id}`, {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata
+          })
+
+          var res = await req.json();
+
+          if(res["status"] =="saved"){
+            onAdvance('resolved');
+          }
+
+          setSaving(false);
+        }else{
+          setErrorMessage("Please enter your final notes.");
+        }
+      }
+
+    }
   };
 
   return (
@@ -66,7 +149,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
         <div className="space-y-3">
           <button
             onClick={() => setMediationSuccess(true)}
-            className={`w-full p-4 rounded-lg border-2 transition-all flex items-center ${
+            className={`w-full p-4 cursor-pointer rounded-lg border-2 transition-all flex items-center ${
               mediationSuccess === true
                 ? 'border-green-500 bg-green-500/10'
                 : isDarkMode
@@ -94,7 +177,7 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
 
           <button
             onClick={() => setMediationSuccess(false)}
-            className={`w-full p-4 rounded-lg border-2 transition-all flex items-center ${
+            className={`w-full cursor-pointer p-4 rounded-lg border-2 transition-all flex items-center ${
               mediationSuccess === false
                 ? 'border-red-500 bg-red-500/10'
                 : isDarkMode
@@ -178,27 +261,20 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
 
             <button
               onClick={addTerm}
-              className={`w-full py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-100 hover:bg-gray-200'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}
+              disabled={!savedTerms[savedTerms.length - 1]}
+              className={`w-full py-2 ${
+                savedTerms[savedTerms.length - 1]
+                  ? isDarkMode 
+                    ? 'bg-slate-700 hover:bg-slate-600' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                  : isDarkMode
+                    ? 'bg-slate-900 cursor-not-allowed opacity-50'
+                    : 'bg-gray-50 cursor-not-allowed opacity-50'
+              } ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}
             >
               + Add Another Term
             </button>
           </div>
-        </div>
-      )}
-
-      {mediationSuccess === false && (
-        <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-white border border-gray-200'} rounded-lg p-6`}>
-          <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
-            Reason for Mediation Failure
-          </h3>
-
-          <textarea
-            value={failureReason}
-            onChange={(e) => setFailureReason(e.target.value)}
-            className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            rows={4}
-            placeholder="Explain why parties could not reach an agreement..."
-          />
         </div>
       )}
 
@@ -214,22 +290,27 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
             onChange={(e) => setOfficerNotes(e.target.value)}
             className={`w-full ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-gray-900 border border-gray-300'} rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500`}
             rows={3}
-            placeholder="Any additional observations or context..."
+            placeholder={mediationSuccess == true ? "Any additional observations or context..." : "Reason for Mediation Failure and additional notes..."}
           />
         </div>
       )}
 
+      {
+        errorMessage.trim() !== "" &&
+        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+          {errorMessage}
+        </h3>
+      }
+
       {mediationSuccess !== null && (
         <div className="flex justify-end space-x-4">
-          <button className={`px-6 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} rounded-lg transition-colors`}>
-            Save Draft
-          </button>
           <button
             onClick={handleAdvance}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+            className={`px-6 py-2 bg-green-600  ${caseData.status == "decision" ? "cursor-pointer" : "cursor-not-allowed"} text-white rounded-lg hover:bg-green-700 transition-colors flex items-center`}
           >
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Mark as Resolved
+            {
+              saving ? "Saving" : (<><CheckCircle className="w-4 h-4 mr-2" />Mark as Resolved</>)
+            }
           </button>
         </div>
       )}

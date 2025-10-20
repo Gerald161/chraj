@@ -78,9 +78,9 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
       case 'decision':
         return <DecisionStep caseData={caseData} onAdvance={handleStepChange} isDarkMode={isDarkMode}/>;
       case 'resolved':
-        return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
+        return <ResolvedStep caseData={caseData} onClose={onBack} isDarkMode={isDarkMode}/>;
       default:
-        return <ResolvedStep caseData={caseData} onClose={() => {}} isDarkMode={isDarkMode}/>;
+        return <ResolvedStep caseData={caseData} onClose={onBack} isDarkMode={isDarkMode}/>;
     }
   };
 

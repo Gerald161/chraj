@@ -42,13 +42,12 @@ export const ResolvedStep: React.FC<ResolvedStepProps> = ({ caseData, onClose, i
         </div>
       </div>
 
-      {/* Back to Cases */}
       <div className="text-center">
         <button
           onClick={onClose}
-          className={`${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} px-6 py-3 rounded-lg transition-colors flex items-center mx-auto`}
+          className={`cursor-pointer ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} ${isDarkMode ? 'text-white' : 'text-gray-900'} px-6 py-3 rounded-lg transition-colors flex items-center mx-auto`}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          {/* <ArrowLeft className="w-4 h-4 mr-2" /> */}
           Back to My Cases
         </button>
       </div>
