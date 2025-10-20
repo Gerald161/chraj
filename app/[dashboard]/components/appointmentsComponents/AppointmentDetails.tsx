@@ -1,21 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, Calendar, Clock, MapPin, User, FileText, Save } from 'lucide-react';
-
-interface Appointment {
-  id: string;
-  title: string;
-  type: 'hearing' | 'mediation';
-  date: string;
-  time: string;
-  venue: string;
-  caseNumber: string;
-  parties: {
-    complainant: string;
-    respondent: string;
-  };
-  description?: string;
-  officer?: string;
-}
+import { Appointment } from '../../types/case';
 
 interface AppointmentDetailsProps {
   appointment: Appointment;
@@ -50,7 +35,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   const handleReschedule = () => {
     if (rescheduleDate && rescheduleTime) {
       console.log('Rescheduling appointment:', {
-        id: appointment.id,
+        id: appointment.appointment_id,
         newDate: rescheduleDate,
         newTime: rescheduleTime
       });
@@ -92,7 +77,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <h2 className={`text-2xl font-bold ${themeClasses.text}`}>
-                  {appointment.title}
+                  {appointment.purpose}
                 </h2>
               </div>
               <span className={`px-4 py-2 rounded-full text-sm font-medium ${getTypeColor(appointment.type)}`}>
@@ -103,7 +88,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
             <div className="flex items-center gap-2 text-sm">
               <FileText className={`w-4 h-4 ${themeClasses.textMuted}`} />
               <span className={`font-medium ${themeClasses.textSecondary}`}>
-                Case Number: {appointment.caseNumber}
+                Case Number: {appointment.case_id}
               </span>
             </div>
           </div>
@@ -160,7 +145,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                   <span className={`font-medium ${themeClasses.text}`}>Complainant</span>
                 </div>
                 <p className={`${themeClasses.textSecondary}`}>
-                  {appointment.parties.complainant}
+                  {appointment.complainant}
                 </p>
               </div>
               <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`}>
@@ -169,34 +154,9 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                   <span className={`font-medium ${themeClasses.text}`}>Respondent</span>
                 </div>
                 <p className={`${themeClasses.textSecondary}`}>
-                  {appointment.parties.respondent}
+                  {appointment.respondent}
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* Case Details */}
-          <div className={`rounded-lg border ${themeClasses.card} p-6`}>
-            <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>
-              Case Details
-            </h3>
-            <div className="space-y-4">
-              {appointment.officer && (
-                <div>
-                  <p className={`font-medium ${themeClasses.text} mb-1`}>Assigned Officer</p>
-                  <p className={`${themeClasses.textSecondary}`}>
-                    {appointment.officer}
-                  </p>
-                </div>
-              )}
-              {appointment.description && (
-                <div>
-                  <p className={`font-medium ${themeClasses.text} mb-1`}>Description</p>
-                  <p className={`${themeClasses.textSecondary} leading-relaxed`}>
-                    {appointment.description}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
 

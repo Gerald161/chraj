@@ -1,89 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Calendar, Clock, User, FileText, ChevronDown } from 'lucide-react';
-
-interface Appointment {
-  id: string;
-  title: string;
-  type: 'hearing' | 'mediation';
-  date: string;
-  time: string;
-  venue: string;
-  caseNumber: string;
-  parties: {
-    complainant: string;
-    respondent: string;
-  };
-  description?: string;
-  officer?: string;
-}
+import { Appointment } from '../../types/case';
+import { mockAppointments } from '../../data/mockAppointments';
 
 interface AppointmentsListProps {
   isDarkMode: boolean;
   onAppointmentClick?: (appointment: Appointment) => void;
 }
-
-const mockAppointments: Appointment[] = [
-  {
-    id: '1',
-    title: 'Police Misconduct Investigation',
-    type: 'hearing',
-    date: '2025-01-15',
-    time: '09:30',
-    venue: 'CHRAJ Regional Office, Hearing Room A',
-    caseNumber: 'PMI/2024/0125',
-    parties: {
-      complainant: 'John Doe',
-      respondent: 'Ghana Police Service'
-    },
-    description: 'Initial hearing for police misconduct allegations involving excessive force during arrest.',
-    officer: 'Officer John Smith'
-  },
-  {
-    id: '2',
-    title: 'Employment Discrimination Case',
-    type: 'mediation',
-    date: '2025-01-14',
-    time: '14:00',
-    venue: 'CHRAJ Regional Office, Mediation Room B',
-    caseNumber: 'EDC/2024/0089',
-    parties: {
-      complainant: 'Mary Johnson',
-      respondent: 'XYZ Corporation'
-    },
-    description: 'Mediation session for workplace discrimination complaint.',
-    officer: 'Officer John Smith'
-  },
-  {
-    id: '3',
-    title: 'Land Dispute Resolution',
-    type: 'hearing',
-    date: '2025-01-12',
-    time: '10:00',
-    venue: 'CHRAJ Regional Office, Hearing Room C',
-    caseNumber: 'LDR/2024/0045',
-    parties: {
-      complainant: 'Community Leaders',
-      respondent: 'Local Authority'
-    },
-    description: 'Final hearing for community land rights dispute.',
-    officer: 'Officer John Smith'
-  },
-  {
-    id: '4',
-    title: 'Government Service Complaint',
-    type: 'mediation',
-    date: '2025-01-18',
-    time: '11:15',
-    venue: 'CHRAJ Regional Office, Mediation Room A',
-    caseNumber: 'GSC/2024/0156',
-    parties: {
-      complainant: 'Citizens Group',
-      respondent: 'Municipal Assembly'
-    },
-    description: 'Mediation for service delivery complaints against municipal assembly.',
-    officer: 'Officer John Smith'
-  }
-];
 
 const AppointmentsListPage: React.FC<AppointmentsListProps> = ({ 
   isDarkMode, 
@@ -92,16 +15,18 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'hearing' | 'mediation'>('all');
 
+  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+
   const filteredAndSortedAppointments = useMemo(() => {
-    let filtered = mockAppointments;
+    let filtered = appointments;
 
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(appointment =>
-        appointment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.parties.complainant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.parties.respondent.toLowerCase().includes(searchTerm.toLowerCase())
+        appointment.purpose.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.case_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.complainant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.respondent.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -112,13 +37,35 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
 
     // Sort by date
     return filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [searchTerm, filterType]);
+  }, [appointments, searchTerm, filterType]);
 
   const handleAppointmentClick = (appointment: Appointment) => {
     if (onAppointmentClick) {
       onAppointmentClick(appointment);
     }
   };
+
+  useEffect(()=>{
+    getAllAppointments();
+  }, [])
+
+  async function getAllAppointments(){
+    const myHeaders = new Headers();
+
+    var token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    var req = await fetch("http://127.0.0.1:8000/complaints/get-all-appointments", {
+      headers: myHeaders,
+    })
+
+    var response = await req.json();
+
+    setAppointments(response["appointments"]);
+
+    console.log(response["appointments"]);
+  }
 
   const getTypeColor = (type: string) => {
     return type === 'hearing'
@@ -201,7 +148,7 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
         ) : (
           filteredAndSortedAppointments.map((appointment) => (
             <div
-              key={appointment.id}
+              key={appointment.appointment_id}
               className={`rounded-lg border ${themeClasses.card} p-4 cursor-pointer transition-all duration-200`}
               onClick={() => handleAppointmentClick(appointment)}
             >
@@ -209,7 +156,7 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className={`text-lg font-semibold ${themeClasses.text}`}>
-                      {appointment.title}
+                      {appointment.purpose}
                     </h3>
                   </div>
 
@@ -229,7 +176,7 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
                     <div className="flex items-center gap-2">
                       <FileText className={`w-4 h-4 ${themeClasses.textMuted}`} />
                       <span className={themeClasses.textSecondary}>
-                        {appointment.caseNumber}
+                        {appointment.case_id}
                       </span>
                     </div>
                   </div>
@@ -237,7 +184,7 @@ const AppointmentsListPage: React.FC<AppointmentsListProps> = ({
                   <div className="flex items-center gap-2 text-sm">
                     <User className={`w-4 h-4 ${themeClasses.textMuted}`} />
                     <span className={themeClasses.textSecondary}>
-                      {appointment.parties.complainant} vs {appointment.parties.respondent}
+                      {appointment.complainant} vs {appointment.respondent}
                     </span>
                   </div>
                 </div>

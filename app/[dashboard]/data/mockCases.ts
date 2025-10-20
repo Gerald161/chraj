@@ -19,7 +19,19 @@ export const mockCases: CaseData[] = [
     additionalDetails: {
       location: 'Accra Senior High School, Greater Accra Region',
     },
-    docRequests: []
+    docRequests: [],
+    hearings: [],
+    mediation: {
+      date: "",
+      time: "",
+      venue: "",
+      purpose: "",
+      respondent_attending: null,
+      complainant_attending: null
+    },
+    terms: [],
+    resolved_positively: null,
+    final_notes: null
   },
   {
     id: 'EMP012',
@@ -37,7 +49,19 @@ export const mockCases: CaseData[] = [
     additionalDetails: {
       location: 'Kumasi, Ashanti Region',
     },
-    docRequests: []
+    docRequests: [],
+    hearings: [],
+    mediation: {
+      date: "",
+      time: "",
+      venue: "",
+      purpose: "",
+      respondent_attending: null,
+      complainant_attending: null
+    },
+    terms: [],
+    resolved_positively: null,
+    final_notes: null
   },
   {
     id: 'PUB007',
@@ -56,6 +80,18 @@ export const mockCases: CaseData[] = [
     additionalDetails: {
       location: 'Tamale, Northern Region',
     },
-    docRequests: []
+    docRequests: [],
+    hearings: [],
+    mediation: {
+      date: "",
+      time: "",
+      venue: "",
+      purpose: "",
+      respondent_attending: null,
+      complainant_attending: null
+    },
+    terms: [],
+    resolved_positively: null,
+    final_notes: null
   }
 ];

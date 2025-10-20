@@ -40,3 +40,15 @@ export interface CaseData {
   resolved_positively?: null | boolean;
   final_notes?: string | null;
 };
+
+export interface Appointment {
+  appointment_id: string;
+  type: 'hearing' | 'mediation';
+  purpose: string;
+  date: string;
+  time: string;
+  venue: string;
+  case_id: string;
+  complainant: string;
+  respondent: string;
+}
