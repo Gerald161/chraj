@@ -147,8 +147,6 @@ export const DecisionStep: React.FC<DecisionStepProps> = ({ caseData, onAdvance,
         setMediationSuccess(false);
       }
       setOfficerNotes(caseData.final_notes!);
-    }else{
-      console.log("A decision has not been made")
     }
   }, [])
 

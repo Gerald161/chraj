@@ -24,6 +24,9 @@ export default function DashboardPage() {
 
   const handleCaseUpdate = (updatedCase: CaseData) => {
     setCases(cases.map(c => c.id === updatedCase.id ? updatedCase : c));
+
+    console.log(updatedCase)
+
     setSelectedCase(updatedCase);
   };
 

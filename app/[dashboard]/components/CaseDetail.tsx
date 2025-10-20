@@ -50,10 +50,19 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
   };
 
   const isStepCompleted = (stepIndex: number) => {
-    return stepIndex < getCurrentStepIndex();
+    const currentIndex = getCurrentStepIndex();
+    // If case is resolved, all steps including resolved are completed
+    if (caseData.status === 'resolved') {
+      return true;
+    }
+    return stepIndex < currentIndex;
   };
 
   const isStepActive = (stepLabel: string) => {
+    // When case is resolved, no step should show as active (all are completed)
+    if (caseData.status === 'resolved') {
+      return false;
+    }
     return stepLabel === caseData.status;
   };
 
@@ -61,7 +70,6 @@ export const CaseDetail: React.FC<CaseDetailProps> = ({ caseData, onBack, onUpda
     const updatedCase = { 
       ...caseData, 
       status: newStatus,
-      lastUpdated: new Date().toISOString().split('T')[0],
     };
     onUpdateCase(updatedCase);
     setActiveStep(newStatus);
