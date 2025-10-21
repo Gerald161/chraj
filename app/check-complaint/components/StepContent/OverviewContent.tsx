@@ -1,15 +1,10 @@
 import React from 'react';
 import { User, Clock, CheckCircle } from 'lucide-react';
-
-interface CaseData {
-  assignedOfficer: string;
-  lastUpdated: string;
-  description: string;
-}
+import { ClientCaseData } from '../../types/clientCaseData';
 
 interface OverviewContentProps {
   theme: 'light' | 'dark';
-  caseData: CaseData;
+  caseData: ClientCaseData;
 }
 
 export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseData }) => {
@@ -25,16 +20,16 @@ export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseDat
             <User className="w-6 h-6 opacity-60" />
             <div>
               <p className="text-sm opacity-75">Assigned Officer</p>
-              <p className="font-medium text-lg">{caseData.assignedOfficer}</p>
+              <p className="font-medium text-lg">{caseData.case_officer}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
+          {/* <div className="flex items-center space-x-3">
             <Clock className="w-6 h-6 opacity-60" />
             <div>
               <p className="text-sm opacity-75">Last Updated</p>
               <p className="font-medium text-lg">{caseData.lastUpdated}</p>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className={`p-6 rounded-lg ${
           theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'

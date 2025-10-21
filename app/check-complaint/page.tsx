@@ -9,120 +9,77 @@ import { InvestigationContent } from './components/StepContent/InvestigationCont
 import { HearingContent } from './components/StepContent/HearingContent';
 import { MediationContent } from './components/StepContent/MediationContent';
 import { DecisionContent } from './components/StepContent/DecisionContent';
+import { ClientCaseData } from './types/clientCaseData';
 
 
 export default function CheckComplaint() {
-    interface CaseData {
-        id: string;
-        type: string;
-        status: string;
-        assignedOfficer: string;
-        lastUpdated: string;
-        description: string;
-        currentStep: number;
-        selectedStep: number;
-        steps: {
-            id: number;
-            name: string;
-            status: 'completed' | 'current' | 'pending';
-            date?: string;
-            description: string;
-            component?: 'overview' | 'investigation' | 'hearing' | 'mediation' | 'decision';
-        }[];
-        actions?: {
-            type: 'document_upload' | 'hearing_response' | 'mediation_response' | 'case_closure';
-            title: string;
-            description: string;
-            deadline?: string;
-            data?: any;
-        }[];
-    }
-
     const [theme, setTheme] = useState<'light' | 'dark'>('dark');
     const [currentView, setCurrentView] = useState<'search' | 'dashboard'>('search');
     const [caseId, setCaseId] = useState('');
-    const [caseData, setCaseData] = useState<CaseData | null>(null);
+    const [caseData, setCaseData] = useState<ClientCaseData | null>(null);
     const [loading, setLoading] = useState(false);
+    const [currentStep, setCurrentStep] = useState<string>('');
+
+    const [searchError, setSearchError] = useState("");
 
     // Mock case data
-    const mockCaseData: CaseData = {
-        id: 'CHR001',
-        type: 'Human Rights Violation',
-        status: 'Under Investigation',
-        assignedOfficer: 'Officer John Doe',
-        lastUpdated: 'August 15, 2024',
-        description: 'Complaint regarding excessive force used during arrest at Tema Station. Multiple witnesses present.',
-        currentStep: 2,
-        selectedStep: 1,
-        steps: [
-        {
-            id: 1,
-            name: 'Initial Review',
-            status: 'completed',
-            date: 'August 10, 2024',
-            description: 'Case reviewed and accepted within CHRAJ mandate',
-            component: 'overview'
-        },
-        {
-            id: 2,
-            name: 'Investigation',
-            status: 'current',
-            date: 'August 15, 2024',
-            description: 'Gathering evidence and witness statements',
-            component: 'investigation'
-        },
-        {
-            id: 3,
-            name: 'Hearing',
-            status: 'pending',
-            description: 'Formal hearing scheduled with all parties',
-            component: 'hearing'
-        },
-        {
-            id: 4,
-            name: 'Mediation',
-            status: 'pending',
-            description: 'Optional mediation between parties',
-            component: 'mediation'
-        },
-        {
-            id: 5,
-            name: 'Decision',
-            status: 'pending',
-            description: 'Final verdict and resolution',
-            component: 'decision'
-        }
+    const mockCaseData: ClientCaseData = {
+        id: "CASE-0001",
+        case_officer: "Kofi Darko",
+        status: "hearing",
+        title: "The eventual fall of man",
+        description: "Yooo Kofi",
+        dateSubmitted: "2025-10-16",
+        complainant: "Darko",
+        respondent: "Maa Luu",
+        case_files: [
+            "8cb5d6519dca589d364fb4ae5c19179a.jpg",
+            "8f20513962e81e14f2408984d84717b5.jpg",
+            "09cf2e6b-4e63-4efe-988e-f399c7743de3.jpeg",
+            "09e7bef009e37dabe2710a79f8f3cfbb.jpg"
         ],
-        actions: [
-        {
-            type: 'document_upload',
-            title: 'Medical Records Required',
-            description: 'Please upload medical records from the incident date'
+        requested_documents: [
+            "A book",
+            "A pen"
+        ],
+        hearing_appointment_documents: [
+            "Complainant Item 1",
+            "Complainant Item 2"
+        ],
+        terms: [
+            "First Term",
+            "Second Term"
+        ],
+        your_hearing_appointment: {
+            id: 7,
+            date: "2025-10-29",
+            time: "04:04"
         },
-        {
-            type: 'hearing_response',
-            title: 'Hearing Scheduled',
-            description: 'Initial hearing scheduled for case assessment',
-            data: {
-            date: 'September 8, 2024',
-            time: '10:00 AM',
-            venue: 'CHRAJ Regional Office'
-            }
-        }
-        ]
+        view_type: "respondent"
     };
 
     const handleSearch = async () => {
         if (!caseId.trim()) return;
+
+        setSearchError("");
         
         setLoading(true);
-        // Simulate API call
-        
-        setTimeout(() => {
-            setCaseData(mockCaseData);
+
+        var req = await fetch(`http://127.0.0.1:8000/complaints/get-file-complaint-case/${caseId}`)
+
+        var res = await req.json()
+
+        if(res["error"]){
+            setSearchError("Case not found, please try again");
+        }
+
+        if(res["complaint"]){
+            setCaseData(res["complaint"]);
+            setCurrentStep(res["complaint"].status);
             setCurrentView('dashboard');
-            setLoading(false);
-        }, 1000);
+        }
+
+        setLoading(false);
     };
 
     const handleBackToSearch = () => {
@@ -131,13 +88,8 @@ export default function CheckComplaint() {
         setCaseId('');
     };
 
-    const handleStepClick = (stepId: number) => {
-        if (caseData) {
-        setCaseData({
-            ...caseData,
-            selectedStep: stepId
-        });
-        }
+    const handleStepClick = (stepName: string) => {
+        setCurrentStep(stepName);
     };
 
     const toggleTheme = () => {
@@ -145,12 +97,8 @@ export default function CheckComplaint() {
     };
 
     const renderStepContent = () => {
-        const selectedStep = caseData?.steps.find(step => step.id === caseData.selectedStep);
-        
-        if (!selectedStep) return null;
-
-        switch (selectedStep.component) {
-        case 'overview':
+        switch (currentStep) {
+        case 'initial':
             return <OverviewContent theme={theme} caseData={caseData!} />;
         case 'investigation':
             return <InvestigationContent theme={theme} />;
@@ -159,6 +107,8 @@ export default function CheckComplaint() {
         case 'mediation':
             return <MediationContent theme={theme} />;
         case 'decision':
+            return <DecisionContent theme={theme} />;
+        case 'resolved':
             return <DecisionContent theme={theme} />;
         default:
             return <OverviewContent theme={theme} caseData={caseData!} />;
@@ -175,6 +125,7 @@ export default function CheckComplaint() {
                 onThemeToggle={toggleTheme}
                 onCaseIdChange={setCaseId}
                 onSearch={handleSearch}
+                searchError={searchError}
             />
         </div>
         );
@@ -195,9 +146,9 @@ export default function CheckComplaint() {
                 <div className="flex min-h-[calc(100vh-80px)]">
                     <ProgressSidebar
                         theme={theme}
-                        steps={caseData!.steps}
-                        selectedStep={caseData!.selectedStep}
+                        status={caseData!.status}
                         onStepClick={handleStepClick}
+                        view_type={caseData!.view_type}
                     />
 
                     {/* Main Content Area */}

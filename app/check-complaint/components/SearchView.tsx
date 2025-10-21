@@ -6,6 +6,7 @@ interface SearchViewProps {
   theme: 'light' | 'dark';
   caseId: string;
   loading: boolean;
+  searchError: string;
   onThemeToggle: () => void;
   onCaseIdChange: (value: string) => void;
   onSearch: () => void;
@@ -17,7 +18,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
   loading,
   onThemeToggle,
   onCaseIdChange,
-  onSearch
+  onSearch,
+  searchError
 }) => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
@@ -113,6 +115,11 @@ export const SearchView: React.FC<SearchViewProps> = ({
               </button>
             </div>
           </div>
+
+          {
+            searchError !== "" &&
+            <p className='mt-2 text-lg text-center'>{searchError}</p>
+          }
         </div>
       </div>
     </div>
