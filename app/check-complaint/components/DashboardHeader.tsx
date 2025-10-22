@@ -24,7 +24,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <div className="flex items-center space-x-4">
             <button
               onClick={onBackToSearch}
-              className={`p-2 rounded-lg transition-colors duration-200 ${
+              className={`p-2 cursor-pointer rounded-lg transition-colors duration-200 ${
                 theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
               }`}
             >
