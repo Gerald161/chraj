@@ -145,127 +145,132 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
       {/* Mediation Status - Dynamic based on caseData.status */}
       {renderStatusCard()}
 
-      {/* Mediation Schedule */}
-      <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-      }`}>
-        <div className="flex items-start space-x-3 mb-6">
-          <Calendar className="w-6 h-6 text-blue-500 mt-1" />
-          <div className="flex-1">
-            <h3 className="font-semibold text-xl">Mediation Scheduled</h3>
-            <p className="opacity-75 mt-2">Mediation session scheduled for case resolution</p>
-          </div>
-        </div>
-        
-        {/* Confirmed Attendance Success Card */}
-        {isConfirmed && (
-          <div className={`p-6 rounded-lg mb-6 ${
-            theme === 'dark' ? 'bg-green-600/30 border-2 border-green-500' : 'bg-green-100 border-2 border-green-400'
+      {
+        (phaseState === 'current' || phaseState === 'completed') &&
+        <>
+          {/* Mediation Schedule */}
+          <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
           }`}>
-            <div className="flex items-center space-x-3 mb-2">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-              <h4 className="font-semibold text-green-600 text-lg">Attendance Confirmed</h4>
+            <div className="flex items-start space-x-3 mb-6">
+              <Calendar className="w-6 h-6 text-blue-500 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-xl">Mediation Scheduled</h3>
+                <p className="opacity-75 mt-2">Mediation session scheduled for case resolution</p>
+              </div>
             </div>
-            <p className="text-sm opacity-75 ml-9">
-              Your attendance has been successfully confirmed. You will receive a reminder before the mediation session.
-            </p>
-          </div>
-        )}
+            
+            {/* Confirmed Attendance Success Card */}
+            {isConfirmed && (
+              <div className={`p-6 rounded-lg mb-6 ${
+                theme === 'dark' ? 'bg-green-600/30 border-2 border-green-500' : 'bg-green-100 border-2 border-green-400'
+              }`}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <h4 className="font-semibold text-green-600 text-lg">Attendance Confirmed</h4>
+                </div>
+                <p className="text-sm opacity-75 ml-9">
+                  Your attendance has been successfully confirmed. You will receive a reminder before the mediation session.
+                </p>
+              </div>
+            )}
 
-        {/* Original Schedule */}
-        <div className={`p-6 rounded-lg mb-6 ${
-          theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
-        }`}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
-            <div><strong>Date:</strong> September 15, 2024</div>
-            <div><strong>Time:</strong> 2:00 PM</div>
-            <div><strong>Venue:</strong> CHRAJ Mediation Center</div>
-          </div>
-        </div>
-
-        {/* Requested Reschedule (Submitted) */}
-        {isSubmitted && rescheduleDate && (
-          <div className={`p-6 rounded-lg mb-6 ${
-            theme === 'dark' ? 'bg-blue-600/20 border-2 border-blue-500' : 'bg-blue-50 border-2 border-blue-300'
-          }`}>
-            <h4 className="font-semibold text-blue-600 mb-3">Requested New Schedule</h4>
-            <div className="text-lg">
-              <p><strong>Requested Date & Time:</strong> {formatDateTime(rescheduleDate)}</p>
-              <p className="text-sm mt-2 opacity-75">Status: Pending Approval</p>
+            {/* Original Schedule */}
+            <div className={`p-6 rounded-lg mb-6 ${
+              theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
+            }`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
+                <div><strong>Date:</strong> September 15, 2024</div>
+                <div><strong>Time:</strong> 2:00 PM</div>
+                <div><strong>Venue:</strong> CHRAJ Mediation Center</div>
+              </div>
             </div>
-          </div>
-        )}
-        
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button 
-            onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
-            disabled={isSubmitted}
-            className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
-              isSubmitted || isConfirmed
-                ? theme === 'dark' 
-                  ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
-                  : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
-          >
-            {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
-          </button>
-          <button 
-            onClick={handleRescheduleClick}
-            disabled={isConfirmed}
-            className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
-              isConfirmed
-                ? theme === 'dark'
-                  ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                  : 'bg-gray-200 cursor-not-allowed text-gray-400'
-                : theme === 'dark' 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-            }`}
-          >
-            {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
-          </button>
-        </div>
-        
-        {/* Reschedule Form */}
-        {showReschedule && (
-          <div className={`mt-6 p-6 rounded-lg border-2 ${
-            theme === 'dark' ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-300'
-          }`}>
-            <h4 className="font-semibold text-lg mb-4">Select New Date and Time</h4>
-            <input
-              type="datetime-local"
-              value={rescheduleDate}
-              onChange={handleDateChange}
-              className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                theme === 'dark'
-                  ? 'bg-gray-800 border-gray-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-              }`}
-            />
-            <div className="flex gap-3">
+
+            {/* Requested Reschedule (Submitted) */}
+            {isSubmitted && rescheduleDate && (
+              <div className={`p-6 rounded-lg mb-6 ${
+                theme === 'dark' ? 'bg-blue-600/20 border-2 border-blue-500' : 'bg-blue-50 border-2 border-blue-300'
+              }`}>
+                <h4 className="font-semibold text-blue-600 mb-3">Requested New Schedule</h4>
+                <div className="text-lg">
+                  <p><strong>Requested Date & Time:</strong> {formatDateTime(rescheduleDate)}</p>
+                  <p className="text-sm mt-2 opacity-75">Status: Pending Approval</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button 
-                onClick={handleSubmitRequest}
-                disabled={!rescheduleDate}
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200"
+                onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
+                disabled={isSubmitted}
+                className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+                  isSubmitted || isConfirmed
+                    ? theme === 'dark' 
+                      ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
+                      : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
               >
-                Submit Request
+                {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
               </button>
               <button 
-                onClick={handleCancel}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                  theme === 'dark' 
-                    ? 'bg-gray-600 hover:bg-gray-500 text-white' 
-                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                onClick={handleRescheduleClick}
+                disabled={isConfirmed}
+                className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+                  isConfirmed
+                    ? theme === 'dark'
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                      : 'bg-gray-200 cursor-not-allowed text-gray-400'
+                    : theme === 'dark' 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                 }`}
               >
-                Cancel
+                {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
               </button>
             </div>
+            
+            {/* Reschedule Form */}
+            {showReschedule && (
+              <div className={`mt-6 p-6 rounded-lg border-2 ${
+                theme === 'dark' ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-300'
+              }`}>
+                <h4 className="font-semibold text-lg mb-4">Select New Date and Time</h4>
+                <input
+                  type="datetime-local"
+                  value={rescheduleDate}
+                  onChange={handleDateChange}
+                  className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    theme === 'dark'
+                      ? 'bg-gray-800 border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                />
+                <div className="flex gap-3">
+                  <button 
+                    onClick={handleSubmitRequest}
+                    disabled={!rescheduleDate}
+                    className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200"
+                  >
+                    Submit Request
+                  </button>
+                  <button 
+                    onClick={handleCancel}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                      theme === 'dark' 
+                        ? 'bg-gray-600 hover:bg-gray-500 text-white' 
+                        : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      }
     </div>
   );
 };

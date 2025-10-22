@@ -106,49 +106,54 @@ export const DecisionContent: React.FC<DecisionContentProps> = ({ theme, caseDat
       {/* Decision Status - Dynamic based on caseData.status */}
       {renderStatusCard()}
 
-      {/* Terms & Agreement Reached */}
-      <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-      }`}>
-        <div className="flex items-center space-x-2 mb-4">
-          <FileCheck className="w-6 h-6 text-green-500" />
-          <h3 className="text-xl font-semibold">Terms & Agreement Reached</h3>
-        </div>
-        
-        <div className="space-y-3 mb-6">
-          {agreedTerms.map((term, index) => (
-            <div 
-              key={index}
-              className={`p-4 rounded-lg ${
-                theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
-              }`}
-            >
-              <div className="flex items-start space-x-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <p className="opacity-90">{term}</p>
-              </div>
+      {
+        (phaseState === 'current' || phaseState === 'completed') &&
+        <>
+          {/* Terms & Agreement Reached */}
+          <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <div className="flex items-center space-x-2 mb-4">
+              <FileCheck className="w-6 h-6 text-green-500" />
+              <h3 className="text-xl font-semibold">Terms & Agreement Reached</h3>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Case Status - Automatically Closed */}
-      {phaseState === 'completed' && (
-        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 border-2 ${
-          theme === 'dark' 
-            ? 'bg-gray-800 border-green-500/30' 
-            : 'bg-white border-green-500/20'
-        }`}>
-          <div className="flex items-center space-x-3 mb-4">
-            <CheckCircle2 className="w-7 h-7 text-green-500" />
-            <h3 className="text-xl font-semibold text-green-500">Case Closed</h3>
+            
+            <div className="space-y-3 mb-6">
+              {agreedTerms.map((term, index) => (
+                <div 
+                  key={index}
+                  className={`p-4 rounded-lg ${
+                    theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <p className="opacity-90">{term}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="opacity-75">
-            Your case has been resolved and automatically closed following the successful completion of all proceedings. 
-            All agreed terms have been documented and the case is now complete.
-          </p>
-        </div>
-      )}
+
+          {/* Case Status - Automatically Closed */}
+          {phaseState === 'completed' && (
+            <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 border-2 ${
+              theme === 'dark' 
+                ? 'bg-gray-800 border-green-500/30' 
+                : 'bg-white border-green-500/20'
+            }`}>
+              <div className="flex items-center space-x-3 mb-4">
+                <CheckCircle2 className="w-7 h-7 text-green-500" />
+                <h3 className="text-xl font-semibold text-green-500">Case Closed</h3>
+              </div>
+              <p className="opacity-75">
+                Your case has been resolved and automatically closed following the successful completion of all proceedings. 
+                All agreed terms have been documented and the case is now complete.
+              </p>
+            </div>
+          )}
+        </>
+      }
     </div>
   );
 };
