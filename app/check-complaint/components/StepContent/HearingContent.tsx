@@ -14,6 +14,8 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isFinalized, setIsFinalized] = useState(false);
 
+  const [isRescheduled, setIsRescheduled] = useState(false);
+
   // Helper function to determine the step index
   const getStepIndex = (status: string) => {
     const steps = ['initial', 'investigation', 'hearing', 'mediation', 'decision', 'resolved'];
@@ -108,7 +110,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
       var res = await req.json();
 
       if(res["status"] == "saved"){
-        console.log("saved")
+        setIsRescheduled(true);
       }
     }
   };
@@ -300,8 +302,8 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
                   caseData.your_hearing_appointment?.requested_reschedule.date === "" &&
                   <button 
                     onClick={handleRescheduleClick}
-                    disabled={isConfirmed}
-                    className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+                    disabled={isConfirmed || isRescheduled}
+                    className={`py-4 rounded-lg font-medium disabled:cursor-not-allowed transition-colors duration-200 ${
                       isConfirmed
                         ? theme === 'dark'
                           ? 'bg-gray-600 cursor-not-allowed text-gray-400'
@@ -333,18 +335,18 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
             {
               !isFinalized &&
                 <button 
-                onClick={handleSubmit}
-                disabled={!isConfirmed && !isSubmitted}
-                className={`w-full py-4 rounded-lg font-medium transition-colors duration-200 ${
-                  isConfirmed || isSubmitted
-                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : theme === 'dark'
-                      ? 'bg-gray-700 cursor-not-allowed text-gray-500'
-                      : 'bg-gray-200 cursor-not-allowed text-gray-400'
-                }`}
-              >
+                  onClick={handleSubmit}
+                  disabled={(!isConfirmed && !isSubmitted) || isRescheduled}
+                  className={`w-full py-4 rounded-lg disabled:cursor-not-allowed font-medium transition-colors duration-200 ${
+                    isConfirmed || isSubmitted
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : theme === 'dark'
+                        ? 'bg-gray-700 cursor-not-allowed text-gray-500'
+                        : 'bg-gray-200 cursor-not-allowed text-gray-400'
+                  }`}
+                >
                 Submit
-              </button>
+                </button>
             }
 
             {
