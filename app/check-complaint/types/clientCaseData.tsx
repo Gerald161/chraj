@@ -16,6 +16,12 @@ export interface ClientCaseData {
         date: string;
         time: string;
         venue: string;
+        respondent_attending: boolean;
+        complainant_attending: boolean;
+        requested_reschedule: {
+            date: string,
+            time: string
+        }
     } | null;
     view_type: string;
     mandate_decision: boolean | null;

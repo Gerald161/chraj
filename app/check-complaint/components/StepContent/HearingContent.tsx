@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Circle, Calendar, CheckCircle, AlertCircle, File, Check } from 'lucide-react';
 import { ClientCaseData } from '../../types/clientCaseData';
 
@@ -12,7 +12,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(false);
 
   // Helper function to determine the step index
   const getStepIndex = (status: string) => {
@@ -39,13 +39,6 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
       return 'pending';
     }
   };
-
-  const requiredItems = [
-    'Evidence files',
-    'Previous correspondence',
-    'Witness contact information',
-    'Supporting documents'
-  ];
 
   const handleRescheduleClick = () => {
     setShowReschedule(true);
@@ -78,9 +71,6 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
 
   const handleSubmit = async () => {
     if (isConfirmed) {
-      console.log('Firing: Confirm Attendance Submission');
-      // Add your attendance confirmation submission logic here
-
       const formdata = new FormData();
       formdata.append("attendee", caseData.view_type);
 
@@ -92,7 +82,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
       var res = await req.json();
 
       if(res["status"] == "saved"){
-        setIsSaved(true);
+        setIsFinalized(true);
       }
 
     } else if (isSubmitted && rescheduleDate) {
@@ -100,12 +90,43 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
       const date = dateObj.toISOString().split('T')[0];
       const time = dateObj.toTimeString().split(' ')[0].slice(0, 5);
 
-      console.log('Firing: Reschedule Request Submission');
-      console.log('Date:', date);
-      console.log('Time:', time);
-      // Add your reschedule request submission logic here
+      const formdata = new FormData();
+      formdata.append("date", date);
+      formdata.append("time", time);
+
+      if(caseData.view_type == "respondent"){
+        formdata.append("requester", "respondent");
+      }else{
+        formdata.append("requester", "complainant");
+      }
+
+      var req = await fetch(`http://127.0.0.1:8000/complaints/reschedule-request-notification/${caseData.your_hearing_appointment!.id}`, {
+        method: "POST",
+        body: formdata
+      })
+
+      var res = await req.json();
+
+      if(res["status"] == "saved"){
+        console.log("saved")
+      }
     }
   };
+
+  useEffect(()=>{
+    if(caseData.view_type == "complainant"){
+      if(caseData.your_hearing_appointment?.complainant_attending == true){
+        setIsFinalized(true);
+      }
+    }
+
+    if(caseData.view_type == "respondent"){
+      if(caseData.your_hearing_appointment?.respondent_attending == true){
+        setIsFinalized(true);
+      }
+    }
+    
+  }, [])
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -254,57 +275,82 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
                 <h4 className="font-semibold text-blue-600 mb-3">Requested New Schedule</h4>
                 <div className="text-lg">
                   <p><strong>Requested Date & Time:</strong> {formatDateTime(rescheduleDate)}</p>
-                  <p className="text-sm mt-2 opacity-75">Status: Pending Approval</p>
                 </div>
               </div>
             )}
             
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <button 
-                onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
-                disabled={isSubmitted}
-                className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
-                  isSubmitted || isConfirmed
-                    ? theme === 'dark' 
-                      ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
-                      : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
-              >
-                {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
-              </button>
-              <button 
-                onClick={handleRescheduleClick}
-                disabled={isConfirmed}
-                className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
-                  isConfirmed
-                    ? theme === 'dark'
-                      ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                      : 'bg-gray-200 cursor-not-allowed text-gray-400'
-                    : theme === 'dark' 
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                }`}
-              >
-                {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
-              </button>
-            </div>
+            {
+              !isFinalized &&
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <button 
+                  onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
+                  disabled={isSubmitted}
+                  className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+                    isSubmitted || isConfirmed
+                      ? theme === 'dark' 
+                        ? 'bg-green-600/30 border-2 border-green-500 text-white hover:bg-green-600/40' 
+                        : 'bg-green-100 border-2 border-green-400 text-green-700 hover:bg-green-200'
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  } ${isSubmitted ? 'cursor-not-allowed' : ''}`}
+                >
+                  {isConfirmed ? 'Cancel Attendance' : 'Confirm Attendance'}
+                </button>
+                {
+                  caseData.your_hearing_appointment?.requested_reschedule.date === "" &&
+                  <button 
+                    onClick={handleRescheduleClick}
+                    disabled={isConfirmed}
+                    className={`py-4 rounded-lg font-medium transition-colors duration-200 ${
+                      isConfirmed
+                        ? theme === 'dark'
+                          ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                          : 'bg-gray-200 cursor-not-allowed text-gray-400'
+                        : theme === 'dark' 
+                          ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    }`}
+                  >
+                    {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
+                  </button>
+                }
+              </div>
+            }
+
+            {
+              caseData.your_hearing_appointment?.requested_reschedule.date !== "" &&
+              <div className={`p-6 mt-4 rounded-lg mb-6 ${
+                theme === 'dark' ? 'bg-blue-600/20 border-2 border-blue-500' : 'bg-blue-50 border-2 border-blue-300'
+              }`}>
+                <h4 className="font-semibold text-blue-600 mb-3">Requested New Schedule</h4>
+                <div className="text-lg">
+                  <p><strong>Requested Date & Time:</strong> {formatDate(caseData.your_hearing_appointment!.requested_reschedule.date)} {formatTime(caseData.your_hearing_appointment!.requested_reschedule.time)}</p>
+                </div>
+              </div>
+            }
 
             {/* Submit Button */}
-            <button 
-              onClick={handleSubmit}
-              disabled={!isConfirmed && !isSubmitted}
-              className={`w-full py-4 rounded-lg font-medium transition-colors duration-200 ${
-                isConfirmed || isSubmitted
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : theme === 'dark'
-                    ? 'bg-gray-700 cursor-not-allowed text-gray-500'
-                    : 'bg-gray-200 cursor-not-allowed text-gray-400'
-              }`}
-            >
-              Submit
-            </button>
+            {
+              !isFinalized &&
+                <button 
+                onClick={handleSubmit}
+                disabled={!isConfirmed && !isSubmitted}
+                className={`w-full py-4 rounded-lg font-medium transition-colors duration-200 ${
+                  isConfirmed || isSubmitted
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : theme === 'dark'
+                      ? 'bg-gray-700 cursor-not-allowed text-gray-500'
+                      : 'bg-gray-200 cursor-not-allowed text-gray-400'
+                }`}
+              >
+                Submit
+              </button>
+            }
+
+            {
+              isFinalized &&
+              <p className="text-xl font-semibold mt-4">Appointment for hearing is confirmed</p>
+            }
             
             {/* Reschedule Form */}
             {showReschedule && (
@@ -346,7 +392,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
           </div>
 
           {/* Required Documents */}
-          {requiredItems.length > 0 && (
+          {caseData.hearing_appointment_documents.length > 0 && (
             <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -354,7 +400,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
               <p className="text-sm opacity-75 mb-4">Please bring the following documents to your hearing:</p>
               
               <div className="space-y-2">
-                {requiredItems.map((item, index) => (
+                {caseData.hearing_appointment_documents.map((item, index) => (
                   <div key={index} className={`flex items-center space-x-3 p-3 rounded-lg ${
                     theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
                   }`}>
