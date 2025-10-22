@@ -82,11 +82,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
               >
                 <item.icon className="w-5 h-5" />
                 <span>{item.label}</span>
-                {item.badge && (
+                {/* {item.badge && (
                   <span className={`ml-auto bg-red-600 text-xs px-2 py-1 rounded-full text-white`}>
                     {item.badge}
                   </span>
-                )}
+                )} */}
               </button>
             </li>
           ))}

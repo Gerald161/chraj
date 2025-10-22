@@ -1,11 +1,9 @@
 import { Calendar, User } from 'lucide-react';
 import { Appointment } from '../../types/case';
 
-export type UserRole = 'complainant' | 'respondent';
-
 export interface NotificationData {
   notification_id: string;
-  requester: UserRole;
+  requester: string;
   new_date: string;
   new_time: string;
   is_read: boolean;
@@ -13,7 +11,7 @@ export interface NotificationData {
   user_name: string;
   appointment: {
     appointment_id: string;
-    type: string;
+    type: 'hearing' | 'mediation';
     purpose: string;
     date: string;
     time: string;
@@ -39,8 +37,21 @@ export function NotificationCard({
   isDarkMode,
   onClick,
 }: NotificationCardProps) {
-  const handleCardClick = () => {
-    // onClick?.(notification.notification_id);
+  const handleCardClick = async () => {
+    onClick?.(notification.appointment);
+
+    const myHeaders = new Headers();
+
+    var token = localStorage.getItem("token");
+
+    myHeaders.append("Authorization", `Token ${token}`);
+
+    var req = await fetch(`http://127.0.0.1:8000/complaints/read-notification/${notification.notification_id}`, {
+      method: "POST",
+      headers: myHeaders,
+    })
+
+    await req.json();
   };
 
   return (
