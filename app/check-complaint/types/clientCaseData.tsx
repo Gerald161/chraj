@@ -15,6 +15,7 @@ export interface ClientCaseData {
         id: number;
         date: string;
         time: string;
+        venue: string;
     } | null;
     view_type: string;
     mandate_decision: boolean | null;

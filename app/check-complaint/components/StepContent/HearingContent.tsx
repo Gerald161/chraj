@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Circle, Calendar, CheckCircle, AlertCircle, File, Check } from 'lucide-react';
 import { ClientCaseData } from '../../types/clientCaseData';
 
@@ -12,6 +12,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   // Helper function to determine the step index
   const getStepIndex = (status: string) => {
@@ -75,6 +76,37 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
     setRescheduleDate('');
   };
 
+  const handleSubmit = async () => {
+    if (isConfirmed) {
+      console.log('Firing: Confirm Attendance Submission');
+      // Add your attendance confirmation submission logic here
+
+      const formdata = new FormData();
+      formdata.append("attendee", caseData.view_type);
+
+      var req = await fetch(`http://127.0.0.1:8000/complaints/confirm_attendace/${caseData.your_hearing_appointment!.id}`, {
+        method: "POST",
+        body: formdata
+      })
+
+      var res = await req.json();
+
+      if(res["status"] == "saved"){
+        setIsSaved(true);
+      }
+
+    } else if (isSubmitted && rescheduleDate) {
+      const dateObj = new Date(rescheduleDate);
+      const date = dateObj.toISOString().split('T')[0];
+      const time = dateObj.toTimeString().split(' ')[0].slice(0, 5);
+
+      console.log('Firing: Reschedule Request Submission');
+      console.log('Date:', date);
+      console.log('Time:', time);
+      // Add your reschedule request submission logic here
+    }
+  };
+
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
@@ -82,6 +114,27 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    
+    return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -187,9 +240,9 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
-                <div><strong>Date:</strong> September 8, 2024</div>
-                <div><strong>Time:</strong> 10:00 AM</div>
-                <div><strong>Venue:</strong> CHRAJ Regional Office</div>
+                <div><strong>Date:</strong> {formatDate(caseData.your_hearing_appointment!.date)}</div>
+                <div><strong>Time:</strong> {formatTime(caseData.your_hearing_appointment!.time)}</div>
+                <div><strong>Venue:</strong> {caseData.your_hearing_appointment!.venue}</div>
               </div>
             </div>
 
@@ -207,7 +260,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
             )}
             
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <button 
                 onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
                 disabled={isSubmitted}
@@ -237,6 +290,21 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
                 {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
               </button>
             </div>
+
+            {/* Submit Button */}
+            <button 
+              onClick={handleSubmit}
+              disabled={!isConfirmed && !isSubmitted}
+              className={`w-full py-4 rounded-lg font-medium transition-colors duration-200 ${
+                isConfirmed || isSubmitted
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                  : theme === 'dark'
+                    ? 'bg-gray-700 cursor-not-allowed text-gray-500'
+                    : 'bg-gray-200 cursor-not-allowed text-gray-400'
+              }`}
+            >
+              Submit
+            </button>
             
             {/* Reschedule Form */}
             {showReschedule && (

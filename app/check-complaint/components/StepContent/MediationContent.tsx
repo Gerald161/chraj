@@ -68,6 +68,21 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
     setRescheduleDate('');
   };
 
+  const handleSubmit = () => {
+    if (isConfirmed) {
+      console.log('Firing: Confirm Attendance Submission');
+      // Add your attendance confirmation submission logic here
+    } else if (isSubmitted && rescheduleDate) {
+      const dateObj = new Date(rescheduleDate);
+      const date = dateObj.toISOString().split('T')[0];
+      const time = dateObj.toTimeString().split(' ')[0].slice(0, 5);
+      console.log('Firing: Reschedule Request Submission');
+      console.log('Date:', date);
+      console.log('Time:', time);
+      // Add your reschedule request submission logic here
+    }
+  };
+
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
@@ -75,6 +90,27 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    
+    return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -180,9 +216,9 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
-                <div><strong>Date:</strong> September 15, 2024</div>
-                <div><strong>Time:</strong> 2:00 PM</div>
-                <div><strong>Venue:</strong> CHRAJ Mediation Center</div>
+                <div><strong>Date:</strong> {formatDate(caseData.your_hearing_appointment!.date)}</div>
+                <div><strong>Time:</strong> {formatTime(caseData.your_hearing_appointment!.time)}</div>
+                <div><strong>Venue:</strong> {caseData.your_hearing_appointment!.venue}</div>
               </div>
             </div>
 
@@ -200,7 +236,7 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
             )}
             
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <button 
                 onClick={isConfirmed ? handleCancelAttendance : handleConfirmAttendance}
                 disabled={isSubmitted}
@@ -230,6 +266,21 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
                 {isSubmitted ? 'Change Reschedule Request' : 'Request Reschedule'}
               </button>
             </div>
+
+            {/* Submit Button */}
+            <button 
+              onClick={handleSubmit}
+              disabled={!isConfirmed && !isSubmitted}
+              className={`w-full py-4 rounded-lg font-medium transition-colors duration-200 ${
+                isConfirmed || isSubmitted
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                  : theme === 'dark'
+                    ? 'bg-gray-700 cursor-not-allowed text-gray-500'
+                    : 'bg-gray-200 cursor-not-allowed text-gray-400'
+              }`}
+            >
+              Submit
+            </button>
             
             {/* Reschedule Form */}
             {showReschedule && (
