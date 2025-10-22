@@ -1,25 +1,37 @@
 import { Calendar, User } from 'lucide-react';
+import { Appointment } from '../../types/case';
 
-export type NotificationType = 'hearing' | 'mediation';
 export type UserRole = 'complainant' | 'respondent';
 
 export interface NotificationData {
-  id: string;
-  type: NotificationType;
-  userRole: UserRole;
-  userName: string;
-  caseNumber: string;
-  currentDateTime: string;
-  proposedDateTime: string;
-  reason?: string;
-  timestamp: Date;
-  isRead: boolean;
+  notification_id: string;
+  requester: UserRole;
+  new_date: string;
+  new_time: string;
+  is_read: boolean;
+  type: string;
+  user_name: string;
+  appointment: {
+    appointment_id: string;
+    type: string;
+    purpose: string;
+    date: string;
+    time: string;
+    venue: string;
+    case_id: string;
+    complainant: string;
+    respondent: string;
+    status: string;
+    complainant_attending: boolean;
+    respondent_attending: boolean;
+    attendee: string;
+  };
 }
 
 interface NotificationCardProps {
   notification: NotificationData;
   isDarkMode: boolean;
-  onClick?: (id: string) => void;
+  onClick?: (appointment: Appointment) => void;
 }
 
 export function NotificationCard({
@@ -27,27 +39,8 @@ export function NotificationCard({
   isDarkMode,
   onClick,
 }: NotificationCardProps) {
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).format(date);
-  };
-
-  const getTimeAgo = (date: Date) => {
-    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    if (seconds < 60) return 'Just now';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`;
-  };
-
   const handleCardClick = () => {
-    onClick?.(notification.id);
+    // onClick?.(notification.notification_id);
   };
 
   return (
@@ -55,7 +48,7 @@ export function NotificationCard({
       className={`
         rounded-lg border transition-all duration-200 cursor-pointer relative
         ${
-          notification.isRead
+          notification.is_read
             ? isDarkMode
               ? 'bg-slate-800 border-slate-700'
               : 'bg-white border-gray-200'
@@ -67,7 +60,7 @@ export function NotificationCard({
       `}
       onClick={handleCardClick}
     >
-      {!notification.isRead && (
+      {!notification.is_read && (
         <div className="absolute top-4 right-4 w-2 h-2 bg-blue-600 rounded-full" />
       )}
 
@@ -77,7 +70,7 @@ export function NotificationCard({
             className={`
               p-2 rounded-lg flex-shrink-0
               ${
-                notification.isRead
+                notification.is_read
                   ? isDarkMode
                     ? 'bg-slate-700'
                     : 'bg-gray-100'
@@ -89,7 +82,7 @@ export function NotificationCard({
           >
             <Calendar
               className={`w-5 h-5 ${
-                notification.isRead
+                notification.is_read
                   ? isDarkMode
                     ? 'text-gray-400'
                     : 'text-gray-600'
@@ -111,17 +104,11 @@ export function NotificationCard({
             <div className="flex items-center gap-2 mb-2">
               <User className={`w-4 h-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
               <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                {notification.userName}
+                {notification.user_name}
                 <span className={`ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  ({notification.userRole})
+                  ({notification.requester})
                 </span>
               </span>
-            </div>
-
-            <div className={`flex items-center gap-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              <span>{formatDate(notification.timestamp)}</span>
-              <span>•</span>
-              <span>{getTimeAgo(notification.timestamp)}</span>
             </div>
           </div>
         </div>

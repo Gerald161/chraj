@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AppointmentsListPage from './appointmentsComponents/AppointmentsListPage';
 import AppointmentDetails from './appointmentsComponents/AppointmentDetails';
 import { Appointment } from '../types/case';
