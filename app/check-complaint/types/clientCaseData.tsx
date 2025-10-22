@@ -16,6 +16,7 @@ export interface ClientCaseData {
         date: string;
         time: string;
         venue: string;
+        purpose: string;
         respondent_attending: boolean;
         complainant_attending: boolean;
         requested_reschedule: {
@@ -25,4 +26,17 @@ export interface ClientCaseData {
     } | null;
     view_type: string;
     mandate_decision: boolean | null;
+    your_mediation_appointment: {
+        id: number;
+        date: string;
+        time: string;
+        venue: string;
+        purpose: string;
+        respondent_attending: boolean;
+        complainant_attending: boolean;
+        requested_reschedule: {
+            date: string,
+            time: string
+        }
+    } | null;
 }

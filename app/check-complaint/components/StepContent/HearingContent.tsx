@@ -269,6 +269,16 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
               </div>
             </div>
 
+            {caseData.your_hearing_appointment?.purpose && (
+              <div className={`p-6 rounded-lg mb-6 ${
+                theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
+              }`}>
+                <div className="text-lg">
+                  <strong>Purpose:</strong> {caseData.your_hearing_appointment.purpose}
+                </div>
+              </div>
+            )}
+
             {/* Requested Reschedule (Submitted) */}
             {isSubmitted && rescheduleDate && (
               <div className={`p-6 rounded-lg mb-6 ${
