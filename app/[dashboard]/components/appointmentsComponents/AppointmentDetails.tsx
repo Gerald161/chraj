@@ -13,8 +13,14 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   isDarkMode, 
   onBack 
 }) => {
-  const [rescheduleDate, setRescheduleDate] = useState(appointment.date);
-  const [rescheduleTime, setRescheduleTime] = useState(appointment.time);
+  const [rescheduleDate, setRescheduleDate] = useState(
+    appointment.new_date || appointment.date
+  );
+
+  const [rescheduleTime, setRescheduleTime] = useState(
+    appointment.new_time || appointment.time
+  );
+  
   const [showSaveButton, setShowSaveButton] = useState(true);
   const [showSuccessCard, setShowSuccessCard] = useState(false);
 

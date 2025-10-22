@@ -55,4 +55,6 @@ export interface Appointment {
   complainant_attending: boolean | null;
   respondent_attending: boolean | null;
   attendee: string;
+  new_date: string,
+  new_time: string,
 }

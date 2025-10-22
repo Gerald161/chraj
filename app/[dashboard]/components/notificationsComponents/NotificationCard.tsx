@@ -23,6 +23,8 @@ export interface NotificationData {
     complainant_attending: boolean;
     respondent_attending: boolean;
     attendee: string;
+    new_date: string;
+    new_time: string;
   };
 }
 
