@@ -86,7 +86,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                   id="caseId"
                   value={caseId}
                   onChange={(e) => onCaseIdChange(e.target.value)}
-                  placeholder="Enter Reference ID (e.g., COMPL001)"
+                  placeholder="Enter Reference ID (e.g., COMPL-0001)"
                   className={`w-full px-4 py-4 rounded-lg border transition-all duration-200 text-lg ${
                     theme === 'dark'
                       ? 'bg-gray-700 border-gray-600 focus:border-blue-500 focus:bg-gray-600'

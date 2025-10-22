@@ -1,15 +1,43 @@
 import React, { useState } from 'react';
-import { Circle, Calendar, CheckCircle, AlertCircle, File } from 'lucide-react';
+import { Circle, Calendar, CheckCircle, AlertCircle, File, Check } from 'lucide-react';
+import { ClientCaseData } from '../../types/clientCaseData';
 
 interface HearingContentProps {
   theme: 'light' | 'dark';
+  caseData: ClientCaseData;
 }
 
-export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
+export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData }) => {
   const [showReschedule, setShowReschedule] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Helper function to determine the step index
+  const getStepIndex = (status: string) => {
+    const steps = ['initial', 'investigation', 'hearing', 'mediation', 'decision', 'resolved'];
+    return steps.indexOf(status.toLowerCase());
+  };
+
+  // Helper function to determine view state for hearing phase
+  const getPhaseState = () => {
+    const currentStepIndex = getStepIndex(caseData.status);
+    const hearingIndex = 2; // hearing is at index 2
+    
+    // If status is 'resolved', phase is complete
+    if (caseData.status.toLowerCase() === 'resolved') {
+      return 'completed';
+    }
+    
+    // Compare indices to determine state
+    if (currentStepIndex > hearingIndex) {
+      return 'completed';
+    } else if (currentStepIndex === hearingIndex) {
+      return 'current';
+    } else {
+      return 'pending';
+    }
+  };
 
   const requiredItems = [
     'Evidence files',
@@ -60,9 +88,52 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
     });
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Hearing Status */}
+  const phaseState = getPhaseState();
+
+  // Render the appropriate status card based on phase state
+  const renderStatusCard = () => {
+    if (phaseState === 'completed') {
+      return (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <h2 className="text-2xl font-semibold mb-6">Hearing Phase</h2>
+          <div className="flex items-center space-x-3 mb-4">
+            <div className={`w-6 h-6 rounded-full ${
+              theme === 'dark' ? 'bg-green-500' : 'bg-green-500'
+            } flex items-center justify-center`}>
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-lg font-medium text-green-600">Completed</span>
+          </div>
+          <p className="opacity-75 mb-6">The formal hearing has been completed. All parties have presented their cases and evidence.</p>
+        </div>
+      );
+    }
+
+    if (phaseState === 'current') {
+      return (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <h2 className="text-2xl font-semibold mb-6">Hearing Phase</h2>
+          <div className="flex items-center space-x-3 mb-4">
+            <div className={`w-6 h-6 rounded-full border-3 ${
+              theme === 'dark' ? 'border-blue-400 bg-blue-400/20' : 'border-blue-500 bg-blue-50'
+            } flex items-center justify-center`}>
+              <div className={`w-2 h-2 rounded-full ${
+                theme === 'dark' ? 'bg-blue-400' : 'bg-blue-500'
+              }`}></div>
+            </div>
+            <span className="text-lg font-medium text-blue-600">Currently in Progress</span>
+          </div>
+          <p className="opacity-75 mb-6">Your hearing is scheduled. Please confirm your attendance and prepare the required documents.</p>
+        </div>
+      );
+    }
+
+    // Pending state
+    return (
       <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       }`}>
@@ -73,6 +144,13 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme }) => {
         </div>
         <p className="opacity-75 mb-6">A formal hearing will be scheduled once the investigation phase is complete.</p>
       </div>
+    );
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Hearing Status - Dynamic based on caseData.status */}
+      {renderStatusCard()}
 
       {/* Hearing Schedule */}
       <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${

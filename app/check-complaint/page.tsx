@@ -22,42 +22,6 @@ export default function CheckComplaint() {
 
     const [searchError, setSearchError] = useState("");
 
-    // Mock case data
-    const mockCaseData: ClientCaseData = {
-        id: "CASE-0001",
-        case_officer: "Kofi Darko",
-        status: "hearing",
-        title: "The eventual fall of man",
-        description: "Yooo Kofi",
-        dateSubmitted: "2025-10-16",
-        complainant: "Darko",
-        respondent: "Maa Luu",
-        case_files: [
-            "8cb5d6519dca589d364fb4ae5c19179a.jpg",
-            "8f20513962e81e14f2408984d84717b5.jpg",
-            "09cf2e6b-4e63-4efe-988e-f399c7743de3.jpeg",
-            "09e7bef009e37dabe2710a79f8f3cfbb.jpg"
-        ],
-        requested_documents: [
-            "A book",
-            "A pen"
-        ],
-        hearing_appointment_documents: [
-            "Complainant Item 1",
-            "Complainant Item 2"
-        ],
-        terms: [
-            "First Term",
-            "Second Term"
-        ],
-        your_hearing_appointment: {
-            id: 7,
-            date: "2025-10-29",
-            time: "04:04"
-        },
-        view_type: "respondent"
-    };
-
     const handleSearch = async () => {
         if (!caseId.trim()) return;
 
@@ -101,15 +65,15 @@ export default function CheckComplaint() {
         case 'initial':
             return <OverviewContent theme={theme} caseData={caseData!} />;
         case 'investigation':
-            return <InvestigationContent theme={theme} />;
+            return <InvestigationContent theme={theme} caseData={caseData!}/>;
         case 'hearing':
-            return <HearingContent theme={theme} />;
+            return <HearingContent theme={theme} caseData={caseData!}/>;
         case 'mediation':
-            return <MediationContent theme={theme} />;
+            return <MediationContent theme={theme} caseData={caseData!} />;
         case 'decision':
-            return <DecisionContent theme={theme} />;
+            return <DecisionContent theme={theme} caseData={caseData!} />;
         case 'resolved':
-            return <DecisionContent theme={theme} />;
+            return <DecisionContent theme={theme} caseData={caseData!}/>;
         default:
             return <OverviewContent theme={theme} caseData={caseData!} />;
         }

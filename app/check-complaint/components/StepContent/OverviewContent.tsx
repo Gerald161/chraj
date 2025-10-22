@@ -1,5 +1,5 @@
-import React from 'react';
-import { User, Clock, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { User, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { ClientCaseData } from '../../types/clientCaseData';
 
 interface OverviewContentProps {
@@ -8,9 +8,14 @@ interface OverviewContentProps {
 }
 
 export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseData }) => {
+  const [currentState, setCurrentState] = useState<boolean|null>(null);
+
+  useEffect(()=>{
+    setCurrentState(caseData.mandate_decision);
+  }, [])
+
   return (
     <div className="space-y-8">
-      {/* Case Overview */}
       <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       }`}>
@@ -23,13 +28,6 @@ export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseDat
               <p className="font-medium text-lg">{caseData.case_officer}</p>
             </div>
           </div>
-          {/* <div className="flex items-center space-x-3">
-            <Clock className="w-6 h-6 opacity-60" />
-            <div>
-              <p className="text-sm opacity-75">Last Updated</p>
-              <p className="font-medium text-lg">{caseData.lastUpdated}</p>
-            </div>
-          </div> */}
         </div>
         <div className={`p-6 rounded-lg ${
           theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
@@ -44,11 +42,36 @@ export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseDat
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       }`}>
         <h3 className="text-xl font-semibold mb-4">Initial Review Status</h3>
-        <div className="flex items-center space-x-3 mb-4">
-          <CheckCircle className="w-6 h-6 text-green-500" />
-          <span className="text-lg font-medium text-green-600">Case Accepted</span>
-        </div>
-        <p className="opacity-75">Your case has been reviewed and falls within CHRAJ's mandate. It has been assigned to an officer for further investigation.</p>
+        {
+          currentState == true && 
+          <>
+            <div className="flex items-center space-x-3 mb-4">
+              <CheckCircle className="w-6 h-6 text-green-500" />
+              <span className="text-lg font-medium text-green-600">Case Accepted</span>
+            </div>
+            <p className="opacity-75">Your case has been reviewed and falls within CHRAJ's mandate. It has been assigned to an officer for further investigation.</p>
+          </> 
+        }
+        {
+          currentState == false &&
+          <>
+            <div className="flex items-center space-x-3 mb-4">
+              <XCircle className="w-6 h-6 text-red-500" />
+              <span className="text-lg font-medium text-red-500">Case Denied</span>
+            </div>
+            <p className="opacity-75">Your case has been reviewed and does not falls within CHRAJ's mandate.</p>
+          </> 
+        }
+        {
+          currentState == null &&
+          <>
+            <div className="flex items-center space-x-3 mb-4">
+              <Clock className="w-6 h-6 text-yellow-500" />
+              <span className="text-lg font-medium text-yellow-600">Pending Review</span>
+            </div>
+            <p className="opacity-75">Your case is currently under review to determine if it falls within CHRAJ's mandate.</p>
+          </>
+        }
       </div>
     </div>
   );

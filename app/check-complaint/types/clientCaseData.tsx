@@ -17,4 +17,5 @@ export interface ClientCaseData {
         time: string;
     } | null;
     view_type: string;
+    mandate_decision: boolean | null;
 }

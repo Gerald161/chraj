@@ -1,15 +1,43 @@
 import React, { useState } from 'react';
-import { Circle, Calendar, CheckCircle } from 'lucide-react';
+import { Circle, Calendar, CheckCircle, Check } from 'lucide-react';
+import { ClientCaseData } from '../../types/clientCaseData';
 
 interface MediationContentProps {
   theme: 'light' | 'dark';
+  caseData: ClientCaseData;
 }
 
-export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => {
+export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseData }) => {
   const [showReschedule, setShowReschedule] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Helper function to determine the step index
+  const getStepIndex = (status: string) => {
+    const steps = ['initial', 'investigation', 'hearing', 'mediation', 'decision', 'resolved'];
+    return steps.indexOf(status.toLowerCase());
+  };
+
+  // Helper function to determine view state for mediation phase
+  const getPhaseState = () => {
+    const currentStepIndex = getStepIndex(caseData.status);
+    const mediationIndex = 3; // mediation is at index 3
+    
+    // If status is 'resolved', phase is complete
+    if (caseData.status.toLowerCase() === 'resolved') {
+      return 'completed';
+    }
+    
+    // Compare indices to determine state
+    if (currentStepIndex > mediationIndex) {
+      return 'completed';
+    } else if (currentStepIndex === mediationIndex) {
+      return 'current';
+    } else {
+      return 'pending';
+    }
+  };
 
   const handleRescheduleClick = () => {
     setShowReschedule(true);
@@ -53,9 +81,52 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
     });
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Mediation Status */}
+  const phaseState = getPhaseState();
+
+  // Render the appropriate status card based on phase state
+  const renderStatusCard = () => {
+    if (phaseState === 'completed') {
+      return (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <h2 className="text-2xl font-semibold mb-6">Mediation Phase</h2>
+          <div className="flex items-center space-x-3 mb-4">
+            <div className={`w-6 h-6 rounded-full ${
+              theme === 'dark' ? 'bg-green-500' : 'bg-green-500'
+            } flex items-center justify-center`}>
+              <Check className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-lg font-medium text-green-600">Completed</span>
+          </div>
+          <p className="opacity-75 mb-6">The mediation session has been completed. Both parties have worked towards a mutual agreement.</p>
+        </div>
+      );
+    }
+
+    if (phaseState === 'current') {
+      return (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <h2 className="text-2xl font-semibold mb-6">Mediation Phase</h2>
+          <div className="flex items-center space-x-3 mb-4">
+            <div className={`w-6 h-6 rounded-full border-3 ${
+              theme === 'dark' ? 'border-blue-400 bg-blue-400/20' : 'border-blue-500 bg-blue-50'
+            } flex items-center justify-center`}>
+              <div className={`w-2 h-2 rounded-full ${
+                theme === 'dark' ? 'bg-blue-400' : 'bg-blue-500'
+              }`}></div>
+            </div>
+            <span className="text-lg font-medium text-blue-600">Currently in Progress</span>
+          </div>
+          <p className="opacity-75 mb-6">Your mediation session is scheduled. This is an opportunity for both parties to work together towards a mutual agreement.</p>
+        </div>
+      );
+    }
+
+    // Pending state
+    return (
       <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       }`}>
@@ -64,8 +135,15 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme }) => 
           <Circle className={`w-6 h-6 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
           <span className="text-lg font-medium opacity-75">Pending</span>
         </div>
-        <p className="opacity-75 mb-6">Mediation is an optional step where both parties can work together to reach a mutual agreement.</p>
+        <p className="opacity-75 mb-6">Mediation is the step where both parties can work together to reach a mutual agreement. It will be scheduled after the hearing phase.</p>
       </div>
+    );
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Mediation Status - Dynamic based on caseData.status */}
+      {renderStatusCard()}
 
       {/* Mediation Schedule */}
       <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
