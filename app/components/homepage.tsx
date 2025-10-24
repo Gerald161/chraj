@@ -34,6 +34,7 @@ import {
   Gavel,
   Building
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Homepage() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -190,10 +191,8 @@ export default function Homepage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                isDarkMode ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-blue-600'
-              }`}>
-                <Shield className="text-white" size={24} />
+              <div className={`w-12 h-12 rounded-lg flex items-center justify-center`}>
+                <Image src={`/chraj_logo.webp`} alt={"Logo"} width="64" height="64" />
               </div>
               <div>
                 <h1 className={`text-2xl font-bold ${themeClasses.text}`}>CHRAJ</h1>

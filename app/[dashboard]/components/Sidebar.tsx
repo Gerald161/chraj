@@ -6,8 +6,9 @@ import {
   Bell, 
   Calendar, 
   LogOut,
-  Building2
 } from 'lucide-react';
+
+import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 
@@ -55,8 +56,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSectio
       {/* Header */}
       <div className="p-6">
         <div className="flex items-center space-x-3">
-          <div className="bg-blue-600 rounded-lg p-2">
-            <Building2 className="w-6 h-6" />
+          <div className="rounded-lg p-2">
+            <Image src={`/chraj_logo.webp`} alt={"Logo"} width="64" height="64" />
           </div>
           <div>
             <h1 className="font-bold text-lg">CHRAJ</h1>

@@ -231,7 +231,8 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
       {
         (phaseState === 'current' || phaseState === 'completed') &&
         <>
-          {/* Mediation Schedule */}
+        {
+          caseData.your_mediation_appointment!.date !== "" &&
           <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
             theme === 'dark' ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -402,6 +403,7 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
               </div>
             )}
           </div>
+        }
         </>
       }
     </div>

@@ -20,15 +20,18 @@ export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseDat
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       }`}>
         <h2 className="text-2xl font-semibold mb-6">Case Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="flex items-center space-x-3">
-            <User className="w-6 h-6 opacity-60" />
-            <div>
-              <p className="text-sm opacity-75">Assigned Officer</p>
-              <p className="font-medium text-lg">{caseData.case_officer}</p>
+        {
+          caseData.case_officer !== "" &&
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="flex items-center space-x-3">
+              <User className="w-6 h-6 opacity-60" />
+              <div>
+                <p className="text-sm opacity-75">Assigned Officer</p>
+                <p className="font-medium text-lg">{caseData.case_officer}</p>
+              </div>
             </div>
           </div>
-        </div>
+        }
         <div className={`p-6 rounded-lg ${
           theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
         }`}>

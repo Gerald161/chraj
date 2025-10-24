@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { Shield, User, Eye, EyeOff, Sun, Moon, ArrowLeft, Lock, Mail, Loader2 } from 'lucide-react';
+import { User, Eye, EyeOff, Sun, Moon, ArrowLeft, Lock, Mail, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function SignupPage() {
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -151,10 +152,8 @@ export default function SignupPage() {
         <div className={`${themeClasses.cardBg} p-8 rounded-2xl shadow-2xl w-full max-w-md border ${themeClasses.border} transition-colors duration-300`}>
           {/* Header */}
           <div className="text-center mb-8">
-            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
-              isDarkMode ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-blue-600 to-blue-700'
-            } shadow-lg`}>
-              <Shield className="text-white" size={32} />
+            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+              <Image src={`/chraj_logo.webp`} alt={"Logo"} width="64" height="64" />
             </div>
             <h2 className={`text-3xl font-bold ${themeClasses.text} mb-2`}>Welcome Back</h2>
             <p className={`${themeClasses.textSecondary}`}>
