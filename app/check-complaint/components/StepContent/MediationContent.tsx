@@ -254,7 +254,7 @@ export const MediationContent: React.FC<MediationContentProps> = ({ theme, caseD
                   <h4 className="font-semibold text-green-600 text-lg">Attendance Confirmed</h4>
                 </div>
                 <p className="text-sm opacity-75 ml-9">
-                  Your attendance has been successfully confirmed. You will receive a reminder before the mediation session.
+                  Your attendance has been successfully confirmed.
                 </p>
               </div>
             )}

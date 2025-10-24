@@ -144,6 +144,7 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
         <>
           {/* Required Documents List */}
           {caseData.requested_documents.length !== 0 &&
+            caseData.view_type !== "respondent" &&
             <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -162,7 +163,9 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
           }
 
           {/* Previously Uploaded Documents */}
-          {caseData.case_files.length > 0 && (
+          {caseData.case_files.length > 0 && 
+          caseData.view_type !== "respondent" &&
+          (
             <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -204,6 +207,8 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
 
           {
             phaseState === 'current' &&
+
+            caseData.view_type !== "respondent" &&
             <>
               {/* Upload New Documents */}
               {

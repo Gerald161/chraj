@@ -203,7 +203,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
             </div>
             <span className="text-lg font-medium text-blue-600">Currently in Progress</span>
           </div>
-          <p className="opacity-75 mb-6">Your hearing is scheduled. Please confirm your attendance and prepare the required documents.</p>
+          <p className="opacity-75 mb-6">Your hearing will be scheduled if not already scheduled. Please confirm your attendance and prepare the required documents when it is available.</p>
         </div>
       );
     }
@@ -256,7 +256,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
                       <h4 className="font-semibold text-green-600 text-lg">Attendance Confirmed</h4>
                     </div>
                     <p className="text-sm opacity-75 ml-9">
-                      Your attendance has been successfully confirmed. You will receive a reminder before the hearing date.
+                      Your attendance has been successfully confirmed.
                     </p>
                   </div>
                 )}
