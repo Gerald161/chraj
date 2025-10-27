@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileText, X, CheckCircle, Circle, Check } from 'lucide-react';
+import { Upload, FileText, X, CheckCircle, Circle, XCircle, Check } from 'lucide-react';
 import { ClientCaseData } from '../../types/clientCaseData';
 
 interface InvestigationContentProps {
@@ -117,6 +117,20 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ them
           <p className="opacity-75 mb-6">Our investigation team is gathering evidence and witness statements related to your case.</p>
         </div>
       );
+    }
+
+    if(caseData.mandate_decision == false){
+      return (
+        <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <div className="flex items-center space-x-3 mb-4">
+            <XCircle className="w-6 h-6 text-red-500" />
+            <span className="text-lg font-medium text-red-500">Case Denied</span>
+          </div>
+          <p className="opacity-75">Case against you has been reviewed and does not falls within CHRAJ's mandate, therefore cannot further be processed.</p>
+        </div>
+      )
     }
 
     // Pending state

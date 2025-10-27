@@ -50,7 +50,6 @@ export default function CheckComplaint() {
                 setCurrentStep(res["complaint"].status);
             }
 
-
             setCurrentView('dashboard');
         }
 

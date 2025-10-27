@@ -62,7 +62,7 @@ export const OverviewContent: React.FC<OverviewContentProps> = ({ theme, caseDat
               <XCircle className="w-6 h-6 text-red-500" />
               <span className="text-lg font-medium text-red-500">Case Denied</span>
             </div>
-            <p className="opacity-75">Your case has been reviewed and does not falls within CHRAJ's mandate.</p>
+            <p className="opacity-75">Your case has been reviewed and does not falls within CHRAJ's mandate, therefore cannot further be processed.</p>
           </> 
         }
         {
