@@ -14,6 +14,8 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isFinalized, setIsFinalized] = useState(false);
 
+  const [hasRescheduledDate, setHasRescheduledDate] = useState(false);
+
   const [isRescheduled, setIsRescheduled] = useState(false);
 
   // Helper function to determine the step index
@@ -111,6 +113,7 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
 
       if(res["status"] == "saved"){
         setIsRescheduled(true);
+        setHasRescheduledDate(true);
       }
     }
   };
@@ -360,6 +363,11 @@ export const HearingContent: React.FC<HearingContentProps> = ({ theme, caseData 
                     >
                     Submit
                     </button>
+                }
+
+                {
+                  hasRescheduledDate &&
+                  <p className="text-xl font-semibold mt-4">Your rescheduled date has been submitted, please check back again to see the updated date and time.</p>
                 }
 
                 {
