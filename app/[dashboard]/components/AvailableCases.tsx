@@ -92,7 +92,7 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col">
-      {currentView === 'list' && (
+      {/* {currentView === 'list' && (
         <div className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'} border-b p-6`}>
           <div className="flex space-x-4">
             <div className="flex-1 relative">
@@ -111,7 +111,7 @@ export const AvailableCases: React.FC<AvailableCasesProps> = ({ isDarkMode }) =>
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {currentView === 'list' && (
         <div className={`flex-1 p-6 overflow-y-auto ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
