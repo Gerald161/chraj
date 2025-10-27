@@ -58,7 +58,7 @@ export const DecisionContent: React.FC<DecisionContentProps> = ({ theme, caseDat
             </div>
             <span className="text-lg font-medium text-green-600">Completed</span>
           </div>
-          <p className="opacity-75 mb-6">The final decision has been issued and the case has been resolved.</p>
+          <p className="opacity-75 mb-6">The case has been resolved.</p>
         </div>
       );
     }
@@ -110,6 +110,7 @@ export const DecisionContent: React.FC<DecisionContentProps> = ({ theme, caseDat
           {/* Terms & Agreement Reached */}
           {
             phaseState === 'completed' &&
+            agreedTerms.length !== 0 &&
             <div className={`p-6 rounded-xl shadow-sm transition-all duration-300 ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
@@ -148,8 +149,7 @@ export const DecisionContent: React.FC<DecisionContentProps> = ({ theme, caseDat
                 <h3 className="text-xl font-semibold text-green-500">Case Closed</h3>
               </div>
               <p className="opacity-75">
-                Your case has been resolved and automatically closed following the successful completion of all proceedings. 
-                All agreed terms have been documented and the case is now complete.
+                Your case has been resolved and automatically closed following the successful completion of all proceedings.
               </p>
             </div>
           )}

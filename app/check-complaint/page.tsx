@@ -39,7 +39,18 @@ export default function CheckComplaint() {
 
         if(res["complaint"]){
             setCaseData(res["complaint"]);
-            setCurrentStep(res["complaint"].status);
+
+            if(res["complaint"].view_type == "respondent"){
+                if(res["complaint"].status === "initial"){
+                    setCurrentStep("investigation");
+                }else{
+                    setCurrentStep(res["complaint"].status);
+                }
+            }else{
+                setCurrentStep(res["complaint"].status);
+            }
+
+
             setCurrentView('dashboard');
         }
 

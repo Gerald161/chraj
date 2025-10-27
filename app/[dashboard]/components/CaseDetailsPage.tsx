@@ -251,7 +251,7 @@ export default function CaseDetailsPage({
                     <div className="text-sm">
                       <p className="font-medium text-red-500 mb-1">Case Outside Mandate</p>
                       <p className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}>
-                        This case will be closed as it falls outside CHRAJ's jurisdiction. Please provide appropriate referral information in your notes.
+                        This case will be closed as it falls outside CHRAJ's jurisdiction.
                       </p>
                     </div>
                   </div>
